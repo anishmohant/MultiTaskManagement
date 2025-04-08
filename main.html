@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Dashboard</title>
+  <style>
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #333;
+      color: #333;
+    }
+    .container {
+      padding: 20px;
+    }
+
+    /* Channel Group Styles */
+    .channel-container {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+    }
+    .channel-box {
+      min-width: 300px;
+      height: 450px;
+      background-color: white;
+      margin-right: 20px;
+      border-radius: 5px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .channel-header {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      /* Group color will be applied inline */
+    }
+    .channel-header-text {
+      flex-grow: 1;
+    }
+    .channel-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .channel-group {
+      margin: 0;
+      font-size: 14px;
+    }
+    .channel-tasks {
+      flex-grow: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      position: relative;
+    }
+    .add-task-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #7fb3ff;
+      color: white;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      margin: 15px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Task Styles */
+    .task {
+      background-color: #7fb3ff;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: grab;
+      color: white;
+      position: relative;
+    }
+    .task:active {
+      cursor: grabbing;
+    }
+    .task-meta {
+      font-size: 10px;
+      margin-bottom: 5px;
+      color: #f0f0f0;
+    }
+    .task-content {
+      margin-right: 25px;
+    }
+    .delete-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.3);
+      color: white;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .delete-channel-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #ff5555;
+      color: white;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 5px;
+    }
+    .move-to-done-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 5px;
+      display: block;
+    }
+
+    /* Working and Done Boxes */
+    .workflow-container {
+      display: flex;
+      gap: 20px;
+    }
+    .workflow-box {
+      flex: 1;
+      background-color: white;
+      border-radius: 5px;
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .workflow-header {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      font-weight: bold;
+    }
+    .workflow-tasks {
+      flex-grow: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      min-height: 300px;
+    }
+
+    /* Add Buttons */
+    .add-group-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #555;
+      color: white;
+      font-size: 28px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .add-channel-btn {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #ccc;
+      color: white;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      width: 90%;
+      max-width: 500px;
+    }
+    .modal h2 {
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .modal-buttons button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .cancel-btn {
+      background-color: #ddd;
+    }
+    .save-btn {
+      background-color: #7fb3ff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Channel Section -->
+    <div class="channel-container" id="channelContainer">
+      <!-- Channels will be dynamically added here -->
+    </div>
+
+    <!-- Workflow Section -->
+    <div class="workflow-container">
+      <div class="workflow-box" id="workingBox">
+        <div class="workflow-header">Currently Working</div>
+        <div class="workflow-tasks" id="workingTasks"></div>
+      </div>
+      <div class="workflow-box" id="doneBox">
+        <div class="workflow-header">DONE</div>
+        <div class="workflow-tasks" id="doneTasks"></div>
+      </div>
+    </div>
+
+    <!-- Add Channel Button -->
+    <button class="add-channel-btn" id="addChannelBtn">+</button>
+
+    <!-- Add Group Button -->
+    <button class="add-group-btn" id="addGroupBtn">+</button>
+  </div>
+
+  <!-- Add Group Modal -->
+  <div class="modal" id="groupModal">
+    <div class="modal-content">
+      <h2>Add New Group</h2>
+      <div class="form-group">
+        <label for="groupName">Group Name</label>
+        <input type="text" id="groupName" placeholder="Enter group name" />
+      </div>
+      <div class="modal-buttons">
+        <button class="cancel-btn" id="cancelGroupBtn">Cancel</button>
+        <button class="save-btn" id="saveGroupBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Channel Modal -->
+  <div class="modal" id="channelModal">
+    <div class="modal-content">
+      <h2>Add New Channel</h2>
+      <div class="form-group">
+        <label for="channelName">Channel Name</label>
+        <input type="text" id="channelName" placeholder="Enter channel name" />
+      </div>
+      <div class="form-group">
+        <label for="channelGroup">Select Group</label>
+        <select id="channelGroup">
+          <!-- Groups will be dynamically added here -->
+        </select>
+      </div>
+      <div class="modal-buttons">
+        <button class="cancel-btn" id="cancelChannelBtn">Cancel</button>
+        <button class="save-btn" id="saveChannelBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <h2>Add New Task</h2>
+      <div class="form-group">
+        <label for="taskContent">Task Content</label>
+        <input type="text" id="taskContent" placeholder="Enter task content" />
+      </div>
+      <input type="hidden" id="channelId" />
+      <div class="modal-buttons">
+        <button class="cancel-btn" id="cancelTaskBtn">Cancel</button>
+        <button class="save-btn" id="saveTaskBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data structure to store groups, channels, and tasks
+    let appData = {
+      groups: [],
+      channels: [],
+      workingTasks: [],
+      doneTasks: []
+    };
+
+    // DOM elements
+    const channelContainer = document.getElementById('channelContainer');
+    const workingTasksDiv = document.getElementById('workingTasks');
+    const doneTasksDiv = document.getElementById('doneTasks');
+    const addGroupBtn = document.getElementById('addGroupBtn');
+    const addChannelBtn = document.getElementById('addChannelBtn');
+
+    // Modal elements
+    const groupModal = document.getElementById('groupModal');
+    const channelModal = document.getElementById('channelModal');
+    const taskModal = document.getElementById('taskModal');
+
+    // Utility: generate a random pastel color (light hue)
+    function randomPastelColor() {
+      const hue = Math.floor(Math.random() * 360);
+      return `hsl(${hue}, 60%, 85%)`;
+    }
+
+    // Utility: format task content by adding a line break every 7 words
+    function formatTaskContent(text) {
+      const words = text.split(' ');
+      let formatted = '';
+      for (let i = 0; i < words.length; i++) {
+        formatted += words[i] + ' ';
+        if ((i + 1) % 7 === 0 && (i + 1) < words.length) {
+          formatted += '<br>';
+        }
+      }
+      return formatted.trim();
+    }
+
+    // Load data from local storage
+    function loadData() {
+      const storedData = localStorage.getItem('ceoDashboardData');
+      if (storedData) {
+        appData = JSON.parse(storedData);
+      } else {
+        appData = {
+          groups: [],
+          channels: [],
+          workingTasks: [],
+          doneTasks: []
+        };
+        saveData();
+      }
+    }
+
+    // Save data to local storage
+    function saveData() {
+      localStorage.setItem('ceoDashboardData', JSON.stringify(appData));
+    }
+
+    // Render all channels
+    function renderChannels() {
+      channelContainer.innerHTML = '';
+      appData.channels.forEach(channel => {
+        const group = appData.groups.find(g => g.id === channel.groupId);
+        if (!group) return;
+        const channelBox = document.createElement('div');
+        channelBox.className = 'channel-box';
+        channelBox.setAttribute('data-channel-id', channel.id);
+
+        const channelHeader = document.createElement('div');
+        channelHeader.className = 'channel-header';
+        channelHeader.style.backgroundColor = group.color;
+
+        const headerText = document.createElement('div');
+        headerText.className = 'channel-header-text';
+
+        const channelTitle = document.createElement('h3');
+        channelTitle.className = 'channel-title';
+        channelTitle.textContent = `Channel: ${channel.name}`;
+
+        const channelGroup = document.createElement('p');
+        channelGroup.className = 'channel-group';
+        channelGroup.textContent = `Group: ${group.name}`;
+
+        // Delete channel button
+        const deleteChannelBtn = document.createElement('button');
+        deleteChannelBtn.className = 'delete-channel-btn';
+        deleteChannelBtn.innerHTML = '×';
+        deleteChannelBtn.setAttribute('data-channel-id', channel.id);
+        deleteChannelBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteChannel(channel.id);
+        });
+
+        const channelTasksDiv = document.createElement('div');
+        channelTasksDiv.className = 'channel-tasks';
+        channelTasksDiv.setAttribute('data-channel-id', channel.id);
+
+        // Render tasks in this channel
+        if (channel.tasks && channel.tasks.length > 0) {
+          channel.tasks.forEach(task => {
+            const taskElement = createTaskElement(task, channel.name, group.name, false, true);
+            channelTasksDiv.appendChild(taskElement);
+          });
+        }
+
+        const addTaskBtn = document.createElement('button');
+        addTaskBtn.className = 'add-task-btn';
+        addTaskBtn.innerHTML = '+';
+        addTaskBtn.setAttribute('data-channel-id', channel.id);
+        addTaskBtn.addEventListener('click', () => openTaskModal(channel.id));
+
+        headerText.appendChild(channelTitle);
+        headerText.appendChild(channelGroup);
+        channelHeader.appendChild(headerText);
+        channelHeader.appendChild(deleteChannelBtn);
+
+        channelBox.appendChild(channelHeader);
+        channelBox.appendChild(channelTasksDiv);
+        channelBox.appendChild(addTaskBtn);
+
+        channelContainer.appendChild(channelBox);
+      });
+
+      setupDragAndDrop();
+    }
+
+    // Render working tasks
+    function renderWorkingTasks() {
+      workingTasksDiv.innerHTML = '';
+      appData.workingTasks.forEach(task => {
+        // showMeta: true, showDelete: false, showMoveButton: true
+        const taskElement = createTaskElement(task, task.channelName, task.groupName, true, false, true);
+        workingTasksDiv.appendChild(taskElement);
+      });
+    }
+
+    // Render done tasks with delete option (with prompt)
+    function renderDoneTasks() {
+      doneTasksDiv.innerHTML = '';
+      appData.doneTasks.forEach(task => {
+        // showMeta: true, showDelete: true (with isDone true to trigger prompt deletion)
+        const taskElement = createTaskElement(task, task.channelName, task.groupName, true, true, false, true);
+        doneTasksDiv.appendChild(taskElement);
+      });
+    }
+
+    /**
+     * Create a task element.
+     * @param {object} task - The task data.
+     * @param {string} channelName - The channel the task belongs to.
+     * @param {string} groupName - The group of the channel.
+     * @param {boolean} showMeta - Whether to show metadata.
+     * @param {boolean} showDelete - Whether to show delete button.
+     * @param {boolean} showMoveButton - Whether to show move-to-done button.
+     * @param {boolean} isDone - Flag to indicate if the task is from the DONE box.
+     */
+    function createTaskElement(task, channelName, groupName, showMeta = false, showDelete = false, showMoveButton = false, isDone = false) {
+      const taskElement = document.createElement('div');
+      taskElement.className = 'task';
+      taskElement.setAttribute('draggable', 'true');
+      taskElement.setAttribute('data-task-id', task.id);
+      taskElement.setAttribute('data-channel-name', channelName);
+      taskElement.setAttribute('data-group-name', groupName);
+
+      if (showMeta) {
+        const taskMeta = document.createElement('div');
+        taskMeta.className = 'task-meta';
+        taskMeta.textContent = `Channel: ${channelName} | Group: ${groupName}`;
+        taskElement.appendChild(taskMeta);
+      }
+
+      const taskContent = document.createElement('div');
+      taskContent.className = 'task-content';
+      // Format task content: insert a new line every 7 words.
+      taskContent.innerHTML = formatTaskContent(task.content);
+      taskElement.appendChild(taskContent);
+
+      if (showDelete) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.innerHTML = '×';
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (isDone) {
+            if (window.confirm('Are you sure you want to delete this done task?')) {
+              deleteDoneTask(task.id);
+            }
+          } else {
+            deleteTask(task.id);
+          }
+        });
+        taskElement.appendChild(deleteBtn);
+      }
+
+      // Add "Move to Done" button for tasks in the working box
+      if (showMoveButton) {
+        const moveBtn = document.createElement('button');
+        moveBtn.className = 'move-to-done-btn';
+        moveBtn.textContent = 'Move to Done';
+        moveBtn.addEventListener('click', () => moveTaskToDone(task.id));
+        taskElement.appendChild(moveBtn);
+      }
+
+      return taskElement;
+    }
+
+    // Delete task from a channel
+    function deleteTask(taskId) {
+      const channelIndex = appData.channels.findIndex(channel =>
+        channel.tasks.some(task => task.id === taskId)
+      );
+      if (channelIndex !== -1) {
+        const taskIndex = appData.channels[channelIndex].tasks.findIndex(task => task.id === taskId);
+        if (taskIndex !== -1) {
+          appData.channels[channelIndex].tasks.splice(taskIndex, 1);
+          saveData();
+          renderChannels();
+        }
+      }
+    }
+
+    // Delete done task with prompt
+    function deleteDoneTask(taskId) {
+      const index = appData.doneTasks.findIndex(task => task.id === taskId);
+      if (index !== -1) {
+        appData.doneTasks.splice(index, 1);
+        saveData();
+        renderDoneTasks();
+      }
+    }
+
+    // Delete a channel
+    function deleteChannel(channelId) {
+      const channelIndex = appData.channels.findIndex(channel => channel.id === channelId);
+      if (channelIndex !== -1) {
+        appData.channels.splice(channelIndex, 1);
+        saveData();
+        renderChannels();
+      }
+    }
+
+    // Move task from working to done
+    function moveTaskToDone(taskId) {
+      const taskIndex = appData.workingTasks.findIndex(t => t.id === taskId);
+      if (taskIndex !== -1) {
+        const task = appData.workingTasks[taskIndex];
+        appData.doneTasks.push({
+          id: 'dt' + Date.now(),
+          content: task.content,
+          channelName: task.channelName,
+          groupName: task.groupName
+        });
+        appData.workingTasks.splice(taskIndex, 1);
+        saveData();
+        renderWorkingTasks();
+        renderDoneTasks();
+      }
+    }
+
+    // Drag and drop functionality
+    function setupDragAndDrop() {
+      const tasks = document.querySelectorAll('.task');
+      const dropZones = [
+        ...document.querySelectorAll('.channel-tasks'),
+        workingTasksDiv,
+        doneTasksDiv
+      ];
+      tasks.forEach(task => {
+        task.addEventListener('dragstart', handleDragStart);
+      });
+      dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+      });
+    }
+
+    let draggedTask = null;
+    let sourceContainer = null;
+    function handleDragStart(e) {
+      draggedTask = e.target;
+      sourceContainer = e.target.parentNode;
+      e.dataTransfer.setData('text/plain', e.target.getAttribute('data-task-id'));
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => {
+        e.target.style.opacity = '0.4';
+      }, 0);
+    }
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    }
+    function handleDrop(e) {
+      e.preventDefault();
+      if (!draggedTask) return;
+      const targetContainer = e.target.closest('.channel-tasks, .workflow-tasks');
+      if (!targetContainer) return;
+      const isFromChannel = sourceContainer.classList.contains('channel-tasks');
+      const isToChannel = targetContainer.classList.contains('channel-tasks') &&
+        targetContainer.getAttribute('data-channel-id') !== sourceContainer.getAttribute('data-channel-id');
+      if (isFromChannel && isToChannel) {
+        draggedTask.style.opacity = '1';
+        draggedTask = null;
+        sourceContainer = null;
+        return;
+      }
+      const taskId = draggedTask.getAttribute('data-task-id');
+      const channelName = draggedTask.getAttribute('data-channel-name');
+      const groupName = draggedTask.getAttribute('data-group-name');
+      if (isFromChannel && targetContainer.id === 'workingTasks') {
+        const channelId = sourceContainer.getAttribute('data-channel-id');
+        const channel = appData.channels.find(c => c.id === channelId);
+        if (channel) {
+          const taskIndex = channel.tasks.findIndex(t => t.id === taskId);
+          if (taskIndex !== -1) {
+            const task = channel.tasks[taskIndex];
+            appData.workingTasks.push({
+              id: 'wt' + Date.now(),
+              content: task.content,
+              channelName: channelName,
+              groupName: groupName
+            });
+            channel.tasks.splice(taskIndex, 1);
+            saveData();
+            renderChannels();
+            renderWorkingTasks();
+          }
+        }
+      } else if (sourceContainer.id === 'workingTasks' && targetContainer.id === 'doneTasks') {
+        const taskIndex = appData.workingTasks.findIndex(t => t.id === taskId);
+        if (taskIndex !== -1) {
+          const task = appData.workingTasks[taskIndex];
+          appData.doneTasks.push({
+            id: 'dt' + Date.now(),
+            content: task.content,
+            channelName: task.channelName,
+            groupName: task.groupName
+          });
+          appData.workingTasks.splice(taskIndex, 1);
+          saveData();
+          renderWorkingTasks();
+          renderDoneTasks();
+        }
+      }
+      draggedTask.style.opacity = '1';
+      draggedTask = null;
+      sourceContainer = null;
+    }
+
+    // Modal initialization for groups, channels, tasks
+    function initGroupModal() {
+      const saveGroupBtn = document.getElementById('saveGroupBtn');
+      const cancelGroupBtn = document.getElementById('cancelGroupBtn');
+      const groupNameInput = document.getElementById('groupName');
+      saveGroupBtn.addEventListener('click', () => {
+        const groupName = groupNameInput.value.trim();
+        if (groupName) {
+          addGroup(groupName);
+          closeGroupModal();
+        }
+      });
+      cancelGroupBtn.addEventListener('click', closeGroupModal);
+    }
+    function openGroupModal() {
+      document.getElementById('groupName').value = '';
+      groupModal.style.display = 'flex';
+    }
+    function closeGroupModal() {
+      groupModal.style.display = 'none';
+    }
+    function initChannelModal() {
+      const saveChannelBtn = document.getElementById('saveChannelBtn');
+      const cancelChannelBtn = document.getElementById('cancelChannelBtn');
+      const channelNameInput = document.getElementById('channelName');
+      const channelGroupSelect = document.getElementById('channelGroup');
+      saveChannelBtn.addEventListener('click', () => {
+        const channelName = channelNameInput.value.trim();
+        const groupId = channelGroupSelect.value;
+        if (channelName && groupId) {
+          addChannel(channelName, groupId);
+          closeChannelModal();
+        }
+      });
+      cancelChannelBtn.addEventListener('click', closeChannelModal);
+    }
+    function openChannelModal() {
+      const channelNameInput = document.getElementById('channelName');
+      const channelGroupSelect = document.getElementById('channelGroup');
+      channelNameInput.value = '';
+      channelGroupSelect.innerHTML = '';
+      appData.groups.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = group.name;
+        channelGroupSelect.appendChild(option);
+      });
+      channelModal.style.display = 'flex';
+    }
+    function closeChannelModal() {
+      channelModal.style.display = 'none';
+    }
+    function initTaskModal() {
+      const saveTaskBtn = document.getElementById('saveTaskBtn');
+      const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+      const taskContentInput = document.getElementById('taskContent');
+      saveTaskBtn.addEventListener('click', () => {
+        const taskContent = taskContentInput.value.trim();
+        const channelId = document.getElementById('channelId').value;
+        if (taskContent && channelId) {
+          addTask(taskContent, channelId);
+          closeTaskModal();
+        }
+      });
+      cancelTaskBtn.addEventListener('click', closeTaskModal);
+    }
+    function openTaskModal(channelId) {
+      document.getElementById('taskContent').value = '';
+      document.getElementById('channelId').value = channelId;
+      taskModal.style.display = 'flex';
+    }
+    function closeTaskModal() {
+      taskModal.style.display = 'none';
+    }
+
+    // Add new group with a random pastel color
+    function addGroup(name) {
+      const groupId = 'g' + Date.now();
+      const color = randomPastelColor();
+      appData.groups.push({ id: groupId, name, color });
+      saveData();
+    }
+
+    // Add new channel
+    function addChannel(name, groupId) {
+      const channelId = 'c' + Date.now();
+      appData.channels.push({ id: channelId, name, groupId, tasks: [] });
+      saveData();
+      renderChannels();
+    }
+
+    // Add new task to a channel
+    function addTask(content, channelId) {
+      const taskId = 't' + Date.now();
+      const channel = appData.channels.find(c => c.id === channelId);
+      if (channel) {
+        channel.tasks.push({ id: taskId, content });
+        saveData();
+        renderChannels();
+      }
+    }
+
+    // Initialize the app
+    function initApp() {
+      loadData();
+      renderChannels();
+      renderWorkingTasks();
+      renderDoneTasks();
+      initGroupModal();
+      initChannelModal();
+      initTaskModal();
+      addGroupBtn.addEventListener('click', openGroupModal);
+      addChannelBtn.addEventListener('click', openChannelModal);
+      makeDraggable(document.getElementById('workingBox'));
+      makeDraggable(document.getElementById('doneBox'));
+      const channelBoxes = document.querySelectorAll('.channel-box');
+      channelBoxes.forEach(box => {
+        makeVerticallyDraggable(box);
+      });
+    }
+
+    // Make an element draggable
+    function makeDraggable(element) {
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      element.querySelector('.workflow-header').addEventListener('mousedown', dragMouseDown);
+      function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.addEventListener('mouseup', closeDragElement);
+        document.addEventListener('mousemove', elementDrag);
+      }
+      function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        element.style.top = (element.offsetTop - pos2) + "px";
+        element.style.left = (element.offsetLeft - pos1) + "px";
+        element.style.position = "relative";
+      }
+      function closeDragElement() {
+        document.removeEventListener('mouseup', closeDragElement);
+        document.removeEventListener('mousemove', elementDrag);
+      }
+    }
+
+    // Make an element draggable vertically only
+    function makeVerticallyDraggable(element) {
+      let pos2 = 0, pos4 = 0;
+      element.querySelector('.channel-header').addEventListener('mousedown', dragMouseDown);
+      function dragMouseDown(e) {
+        if (e.target.classList.contains('delete-channel-btn')) return;
+        e.preventDefault();
+        pos4 = e.clientY;
+        document.addEventListener('mouseup', closeDragElement);
+        document.addEventListener('mousemove', elementDrag);
+      }
+      function elementDrag(e) {
+        e.preventDefault();
+        pos2 = pos4 - e.clientY;
+        pos4 = e.clientY;
+        element.style.top = (element.offsetTop - pos2) + "px";
+        element.style.position = "relative";
+      }
+      function closeDragElement() {
+        document.removeEventListener('mouseup', closeDragElement);
+        document.removeEventListener('mousemove', elementDrag);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
