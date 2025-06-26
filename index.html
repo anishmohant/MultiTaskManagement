@@ -470,6 +470,17 @@
       if (selectedGroup !== 'all') {
         filteredChannels = appData.channels.filter(channel => channel.groupId === selectedGroup);
       }
+      if (filteredChannels.length === 0) {
+        const noChannelsMsg = document.createElement('div');
+        noChannelsMsg.style.cssText = 'width:100%;text-align:center;color:#888;font-size:18px;padding:60px 0;min-width:300px;';
+        noChannelsMsg.textContent = 'No Groups found with this filter.';
+        channelContainer.appendChild(noChannelsMsg);
+        // Keep space intact
+        channelContainer.style.minHeight = '450px';
+        return;
+      } else {
+        channelContainer.style.minHeight = '';
+      }
       filteredChannels.forEach(channel => {
         const group = appData.groups.find(g => g.id === channel.groupId);
         if (!group) return;
