@@ -316,6 +316,31 @@
     .add-channel-btn:hover {
       background-color: #5596e6;
     }
+
+    /* Export/Import/Delete buttons in Help Modal */
+    .export-import-btn {
+      background: #7fb3ff !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 6px !important;
+      font-size: 15px !important;
+      padding: 8px 16px !important;
+      margin: 0 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .export-import-btn:hover {
+      background: #5596e6 !important;
+    }
+    .export-import-btn#deleteDataBtn {
+      background: #ff5555 !important;
+    }
+    .export-import-btn#deleteDataBtn:hover {
+      background: #d22c2c !important;
+    }
   </style>
 </head>
 <body>
@@ -451,6 +476,7 @@
 
     function openHelpModal() {
       helpModal.style.display = 'flex';
+      addExportImportMenu();
     }
     function closeHelpModal() {
       helpModal.style.display = 'none';
@@ -901,39 +927,100 @@
     }
     function openHelpModal() {
       helpModal.style.display = 'flex';
+      addExportImportMenu();
     }
     function closeHelpModal() {
       helpModal.style.display = 'none';
     }
     document.getElementById('closeHelpBtn').addEventListener('click', closeHelpModal);
 
-    // Add new group with a random pastel color
-    function addGroup(name) {
-      const groupId = 'g' + Date.now();
-      const color = randomPastelColor();
-      appData.groups.push({ id: groupId, name, color });
-      saveData();
-      renderGroupFilterOptions();
+    // Export app data as JSON file
+    function exportData() {
+      const dataStr = JSON.stringify(appData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dashboard-data.json';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
     }
 
-    // Add new channel
-    function addChannel(name, groupId) {
-      const channelId = 'c' + Date.now();
-      appData.channels.push({ id: channelId, name, groupId, tasks: [] });
-      saveData();
-      renderChannels();
+    // Import app data from JSON file
+    function importDataFromFile(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.groups && imported.channels && imported.workingTasks && imported.doneTasks) {
+            appData = imported;
+            saveData();
+            renderGroupFilterOptions();
+            renderChannels();
+            renderWorkingTasks();
+            renderDoneTasks();
+            alert('Data imported successfully!');
+          } else {
+            alert('Invalid data format.');
+          }
+        } catch (err) {
+          alert('Failed to import: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
     }
 
-    // Add new task to a channel
-    function addTask(content, channelId) {
-      const taskId = 't' + Date.now();
-      const channel = appData.channels.find(c => c.id === channelId);
-      if (channel) {
-        channel.tasks.push({ id: taskId, content });
-        saveData();
-        renderChannels();
+    // Add export/import/delete menu to help modal
+    function addExportImportMenu() {
+      const helpModalContent = document.querySelector('#helpModal .modal-content');
+      let menuDiv = document.getElementById('exportImportMenu');
+      if (!menuDiv) {
+        menuDiv = document.createElement('div');
+        menuDiv.id = 'exportImportMenu';
+        menuDiv.style.marginTop = '18px';
+        menuDiv.style.display = 'flex';
+        menuDiv.style.gap = '10px';
+        menuDiv.style.justifyContent = 'flex-end';
+        menuDiv.innerHTML = `
+          <button class="save-btn export-import-btn" id="exportDataBtn">Export Data</button>
+          <label class="save-btn export-import-btn" style="cursor:pointer; margin:0; display:inline-flex; align-items:center;" for="importDataInput">Import Data
+            <input type="file" id="importDataInput" accept="application/json" style="display:none;" />
+          </label>
+          <button class="save-btn export-import-btn" id="deleteDataBtn" style="background:#ff5555;">Delete All Data</button>
+        `;
+        const modalButtons = helpModalContent.querySelector('.modal-buttons');
+        helpModalContent.insertBefore(menuDiv, modalButtons);
       }
+      document.getElementById('exportDataBtn').onclick = exportData;
+      document.getElementById('importDataInput').onchange = function(e) {
+        if (e.target.files && e.target.files[0]) {
+          importDataFromFile(e.target.files[0]);
+          e.target.value = '';
+        }
+      };
+      document.getElementById('deleteDataBtn').onclick = function() {
+        if (confirm('Are you sure you want to delete ALL dashboard data? This cannot be undone.')) {
+          localStorage.removeItem('ceoDashboardData');
+          appData = { groups: [], channels: [], workingTasks: [], doneTasks: [] };
+          renderGroupFilterOptions();
+          renderChannels();
+          renderWorkingTasks();
+          renderDoneTasks();
+          alert('All data deleted.');
+        }
+      };
     }
+
+    // Patch openHelpModal to always add the menu
+    const _openHelpModal = openHelpModal;
+    openHelpModal = function() {
+      helpModal.style.display = 'flex';
+      addExportImportMenu();
+    };
 
     // Initialize the app
     function initApp() {
