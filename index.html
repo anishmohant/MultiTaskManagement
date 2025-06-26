@@ -174,33 +174,21 @@
       min-height: 300px;
     }
 
-    /* Add Buttons */
-    .add-group-btn {
+    /* Add Buttons and Group Select as a Set */
+    .group-controls {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background-color: #555;
-      color: white;
-      font-size: 28px;
-      border: none;
-      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      gap: 10px;
+      z-index: 1100;
     }
-    .add-channel-btn {
-      position: absolute;
-      top: 50%;
-      right: 20px;
-      transform: translateY(-50%);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #ccc;
+    .add-group-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background-color: #7fb3ff;
       color: white;
       font-size: 24px;
       border: none;
@@ -208,7 +196,29 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+      transition: background 0.2s;
+      margin: 0;
+    }
+    .add-group-btn:hover {
+      background-color: #5596e6;
+    }
+    .group-select {
+      height: 44px;
+      border-radius: 12px;
+      background: #fff;
+      color: #333;
+      font-size: 16px;
+      border: 1px solid #bbb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 0 14px;
+      min-width: 120px;
+      max-width: 180px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .group-select:focus {
+      border: 1.5px solid #7fb3ff;
     }
 
     /* Modal Styles */
@@ -290,12 +300,13 @@
     <!-- Add Channel Button -->
     <button class="add-channel-btn" id="addChannelBtn">+</button>
 
-    <!-- Add Group Button -->
-    <button class="add-group-btn" id="addGroupBtn">+</button>
-    <!-- Group Filter Select -->
-    <select id="groupFilterSelect" style="position:fixed; bottom:95px; right:20px; width:140px; height:38px; border-radius:8px; background:#fff; color:#333; font-size:16px; border:1px solid #bbb; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:4px 10px; z-index:1100;">
-      <!-- Options will be populated by JS -->
-    </select>
+    <!-- Add Group Button and Group Filter Select -->
+    <div class="group-controls">
+      <button class="add-group-btn" id="addGroupBtn">+</button>
+      <select id="groupFilterSelect" class="group-select">
+        <!-- Options will be populated by JS -->
+      </select>
+    </div>
   </div>
 
   <!-- Add Group Modal -->
