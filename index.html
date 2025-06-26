@@ -847,6 +847,35 @@
       sourceContainer = null;
     }
 
+    // --- Fix: Ensure addGroup, addChannel, addTask are defined before use ---
+    // Add new group with a random pastel color
+    function addGroup(name) {
+      const groupId = 'g' + Date.now();
+      const color = randomPastelColor();
+      appData.groups.push({ id: groupId, name, color });
+      saveData();
+      renderGroupFilterOptions();
+    }
+
+    // Add new channel
+    function addChannel(name, groupId) {
+      const channelId = 'c' + Date.now();
+      appData.channels.push({ id: channelId, name, groupId, tasks: [] });
+      saveData();
+      renderChannels();
+    }
+
+    // Add new task to a channel
+    function addTask(content, channelId) {
+      const taskId = 't' + Date.now();
+      const channel = appData.channels.find(c => c.id === channelId);
+      if (channel) {
+        channel.tasks.push({ id: taskId, content });
+        saveData();
+        renderChannels();
+      }
+    }
+
     // Modal initialization for groups, channels, tasks
     function initGroupModal() {
       const saveGroupBtn = document.getElementById('saveGroupBtn');
