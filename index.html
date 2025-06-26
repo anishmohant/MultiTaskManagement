@@ -346,6 +346,12 @@
     </div>
   </div>
 
+  <!-- Channel Search Popup -->
+  <div id="channelSearchPopup" style="display:none; position:fixed; left:30px; top:30px; z-index:2000; background:white; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.2); min-width:260px; max-width:350px; padding:12px;">
+    <input id="channelSearchInput" type="text" placeholder="Search channels..." style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc; margin-bottom:8px; font-size:16px;">
+    <ul id="channelSearchResults" style="list-style:none; margin:0; padding:0; max-height:220px; overflow-y:auto;"></ul>
+  </div>
+
   <script>
     // Data structure to store groups, channels, and tasks
     let appData = {
@@ -872,6 +878,126 @@
     }
 
     document.addEventListener('DOMContentLoaded', initApp);
+
+    // Channel Search Popup logic
+    const channelSearchPopup = document.getElementById('channelSearchPopup');
+    const channelSearchInput = document.getElementById('channelSearchInput');
+    const channelSearchResults = document.getElementById('channelSearchResults');
+    let channelSearchActive = false;
+    let filteredChannels = [];
+    let selectedChannelIdx = -1;
+
+    // Open search popup on "/" key
+    document.addEventListener('keydown', (e) => {
+      if (
+        e.key === '/' &&
+        !channelSearchActive &&
+        document.activeElement.tagName !== 'INPUT' &&
+        document.activeElement.tagName !== 'TEXTAREA' &&
+        !e.ctrlKey && !e.metaKey && !e.altKey
+      ) {
+        e.preventDefault();
+        channelSearchPopup.style.display = 'block';
+        channelSearchInput.value = '';
+        channelSearchInput.focus();
+        updateChannelSearchResults('');
+        channelSearchActive = true;
+      } else if (channelSearchActive && e.key === 'Escape') {
+        closeChannelSearch();
+      }
+    });
+
+    // Filter and show results as user types
+    channelSearchInput.addEventListener('input', (e) => {
+      updateChannelSearchResults(e.target.value);
+    });
+
+    // Keyboard navigation
+    channelSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (filteredChannels.length > 0) {
+          selectedChannelIdx = (selectedChannelIdx + 1) % filteredChannels.length;
+          updateChannelSearchHighlight();
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (filteredChannels.length > 0) {
+          selectedChannelIdx = (selectedChannelIdx - 1 + filteredChannels.length) % filteredChannels.length;
+          updateChannelSearchHighlight();
+        }
+      } else if (e.key === 'Enter') {
+        if (filteredChannels[selectedChannelIdx]) {
+          selectChannelFromSearch(filteredChannels[selectedChannelIdx].id);
+        }
+      }
+    });
+
+    // Click outside to close
+    document.addEventListener('mousedown', (e) => {
+      if (channelSearchActive && !channelSearchPopup.contains(e.target)) {
+        closeChannelSearch();
+      }
+    });
+
+    function updateChannelSearchResults(query) {
+      const q = query.trim().toLowerCase();
+      filteredChannels = appData.channels.filter(c => c.name.toLowerCase().includes(q));
+      channelSearchResults.innerHTML = '';
+      selectedChannelIdx = filteredChannels.length > 0 ? 0 : -1;
+      filteredChannels.forEach((channel, idx) => {
+        const group = appData.groups.find(g => g.id === channel.groupId);
+        const li = document.createElement('li');
+        li.style.padding = '7px 10px';
+        li.style.cursor = 'pointer';
+        li.style.borderRadius = '4px';
+        li.style.background = idx === selectedChannelIdx ? '#e6f0ff' : '';
+        li.innerHTML = `<b>${channel.name}</b> <span style="color:#888;font-size:13px;">(${group ? group.name : ''})</span>`;
+        li.addEventListener('mouseenter', () => {
+          selectedChannelIdx = idx;
+          updateChannelSearchHighlight();
+        });
+        li.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          selectChannelFromSearch(channel.id);
+        });
+        channelSearchResults.appendChild(li);
+      });
+      // Filter channels in main view
+      filterChannelsInView(q);
+    }
+
+    function updateChannelSearchHighlight() {
+      Array.from(channelSearchResults.children).forEach((li, idx) => {
+        li.style.background = idx === selectedChannelIdx ? '#e6f0ff' : '';
+      });
+    }
+
+    function selectChannelFromSearch(channelId) {
+      closeChannelSearch();
+      // Scroll to channel
+      const channelBox = document.querySelector(`.channel-box[data-channel-id="${channelId}"]`);
+      if (channelBox) {
+        channelBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        channelBox.style.boxShadow = '0 0 0 3px #7fb3ff';
+        setTimeout(() => channelBox.style.boxShadow = '', 1200);
+      }
+    }
+
+    function closeChannelSearch() {
+      channelSearchPopup.style.display = 'none';
+      channelSearchActive = false;
+      filterChannelsInView('');
+    }
+
+    // Filter channels in main view
+    function filterChannelsInView(query) {
+      const q = query.trim().toLowerCase();
+      document.querySelectorAll('.channel-box').forEach(box => {
+        const name = box.querySelector('.channel-title').textContent.toLowerCase();
+        box.style.display = (!q || name.includes(q)) ? '' : 'none';
+      });
+    }
   </script>
 </body>
 </html>
