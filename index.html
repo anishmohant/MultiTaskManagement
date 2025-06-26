@@ -28,6 +28,10 @@
       margin-bottom: 20px;
       padding-bottom: 10px;
     }
+    .channel-container-wrapper {
+      position: relative;
+      width: 100%;
+    }
     .channel-box {
       min-width: 300px;
       height: 450px;
@@ -285,13 +289,43 @@
       background-color: #7fb3ff;
       color: white;
     }
+
+    /* Add Channel Button (floating, right-middle of channel container) */
+    .add-channel-btn {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%) translateX(50%);
+      z-index: 10;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background-color: #7fb3ff;
+      color: white;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+      transition: background 0.2s;
+      margin: 0;
+      pointer-events: auto;
+    }
+    .add-channel-btn:hover {
+      background-color: #5596e6;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Channel Section -->
-    <div class="channel-container" id="channelContainer">
-      <!-- Channels will be dynamically added here -->
+    <!-- Channel Section: channel container with floating add channel button -->
+    <div class="channel-container-wrapper">
+      <div class="channel-container" id="channelContainer">
+        <!-- Channels will be dynamically added here -->
+      </div>
+      <button class="add-channel-btn" id="addChannelBtn">+</button>
     </div>
 
     <!-- Workflow Section -->
@@ -305,9 +339,6 @@
         <div class="workflow-tasks" id="doneTasks"></div>
       </div>
     </div>
-
-    <!-- Add Channel Button -->
-    <button class="add-channel-btn" id="addChannelBtn">+</button>
 
     <!-- Add Group Button and Group Filter Select -->
     <div class="group-controls">
