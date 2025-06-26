@@ -292,6 +292,10 @@
 
     <!-- Add Group Button -->
     <button class="add-group-btn" id="addGroupBtn">+</button>
+    <!-- Group Filter Select -->
+    <select id="groupFilterSelect" style="position:fixed; bottom:95px; right:20px; width:140px; height:38px; border-radius:8px; background:#fff; color:#333; font-size:16px; border:1px solid #bbb; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:4px 10px; z-index:1100;">
+      <!-- Options will be populated by JS -->
+    </select>
   </div>
 
   <!-- Add Group Modal -->
@@ -386,6 +390,7 @@
     const doneTasksDiv = document.getElementById('doneTasks');
     const addGroupBtn = document.getElementById('addGroupBtn');
     const addChannelBtn = document.getElementById('addChannelBtn');
+    const groupFilterSelect = document.getElementById('groupFilterSelect');
 
     // Modal elements
     const groupModal = document.getElementById('groupModal');
@@ -441,10 +446,31 @@
       localStorage.setItem('ceoDashboardData', JSON.stringify(appData));
     }
 
-    // Render all channels
+    // Populate group filter select
+    function renderGroupFilterOptions() {
+      groupFilterSelect.innerHTML = '';
+      const allOption = document.createElement('option');
+      allOption.value = 'all';
+      allOption.textContent = 'All Groups';
+      groupFilterSelect.appendChild(allOption);
+      appData.groups.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = group.name;
+        groupFilterSelect.appendChild(option);
+      });
+      groupFilterSelect.value = 'all';
+    }
+
+    // Render all channels, filtered by group
     function renderChannels() {
       channelContainer.innerHTML = '';
-      appData.channels.forEach(channel => {
+      const selectedGroup = groupFilterSelect ? groupFilterSelect.value : 'all';
+      let filteredChannels = appData.channels;
+      if (selectedGroup !== 'all') {
+        filteredChannels = appData.channels.filter(channel => channel.groupId === selectedGroup);
+      }
+      filteredChannels.forEach(channel => {
         const group = appData.groups.find(g => g.id === channel.groupId);
         if (!group) return;
         const channelBox = document.createElement('div');
@@ -825,6 +851,7 @@
       const color = randomPastelColor();
       appData.groups.push({ id: groupId, name, color });
       saveData();
+      renderGroupFilterOptions();
     }
 
     // Add new channel
@@ -849,6 +876,7 @@
     // Initialize the app
     function initApp() {
       loadData();
+      renderGroupFilterOptions();
       renderChannels();
       renderWorkingTasks();
       renderDoneTasks();
@@ -1048,6 +1076,9 @@
         closeHelpModal();
       }
     });
+
+    // Update channels when group filter changes
+    groupFilterSelect.addEventListener('change', renderChannels);
   </script>
 </body>
 </html>
