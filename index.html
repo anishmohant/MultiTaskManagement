@@ -352,6 +352,25 @@
     <ul id="channelSearchResults" style="list-style:none; margin:0; padding:0; max-height:220px; overflow-y:auto;"></ul>
   </div>
 
+  <!-- Help Modal -->
+  <div class="modal" id="helpModal">
+    <div class="modal-content" style="max-width:340px;">
+      <h2 style="font-size:20px; margin-bottom:10px;">Quick Help</h2>
+      <ul style="padding-left:18px; font-size:15px; margin:0;">
+        <li><b>/</b> : Open channel search</li>
+        <li><b>Esc</b> : Close search/help</li>
+        <li><b>q</b> : Show this help</li>
+        <li><b>↑/↓</b> : Navigate search results</li>
+        <li><b>Enter</b> : Select channel</li>
+        <li><b>Click +</b> : Add group/channel/task</li>
+        <li><b>Drag</b> : Move tasks</li>
+      </ul>
+      <div class="modal-buttons" style="margin-top:18px;">
+        <button class="save-btn" id="closeHelpBtn">OK</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Data structure to store groups, channels, and tasks
     let appData = {
@@ -372,6 +391,15 @@
     const groupModal = document.getElementById('groupModal');
     const channelModal = document.getElementById('channelModal');
     const taskModal = document.getElementById('taskModal');
+    const helpModal = document.getElementById('helpModal');
+
+    function openHelpModal() {
+      helpModal.style.display = 'flex';
+    }
+    function closeHelpModal() {
+      helpModal.style.display = 'none';
+    }
+    document.getElementById('closeHelpBtn').addEventListener('click', closeHelpModal);
 
     // Utility: generate a random pastel color (light hue)
     function randomPastelColor() {
@@ -779,6 +807,17 @@
     function closeTaskModal() {
       taskModal.style.display = 'none';
     }
+    function initHelpModal() {
+      const closeHelpBtn = document.getElementById('closeHelpBtn');
+      closeHelpBtn.addEventListener('click', closeHelpModal);
+    }
+    function openHelpModal() {
+      helpModal.style.display = 'flex';
+    }
+    function closeHelpModal() {
+      helpModal.style.display = 'none';
+    }
+    document.getElementById('closeHelpBtn').addEventListener('click', closeHelpModal);
 
     // Add new group with a random pastel color
     function addGroup(name) {
@@ -816,6 +855,7 @@
       initGroupModal();
       initChannelModal();
       initTaskModal();
+      initHelpModal();
       addGroupBtn.addEventListener('click', openGroupModal);
       addChannelBtn.addEventListener('click', openChannelModal);
       makeDraggable(document.getElementById('workingBox'));
@@ -998,6 +1038,16 @@
         box.style.display = (!q || name.includes(q)) ? '' : 'none';
       });
     }
+
+    // Help modal open with 'q' key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'q' && !channelSearchActive && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        openHelpModal();
+      } else if (e.key === 'Escape') {
+        closeHelpModal();
+      }
+    });
   </script>
 </body>
 </html>
