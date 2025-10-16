@@ -308,6 +308,26 @@
       color: white;
     }
 
+    /* Rich Text Editor */
+    .editor-toolbar {
+      border: 1px solid #ddd;
+      padding: 5px;
+      background-color: #f9f9f9;
+    }
+    .editor-toolbar button {
+      margin-right: 5px;
+      padding: 5px 10px;
+      border: 1px solid #ddd;
+      background-color: white;
+      cursor: pointer;
+    }
+    #taskDetailContent {
+      border: 1px solid #ddd;
+      padding: 10px;
+      min-height: 200px;
+      overflow-y: auto;
+    }
+
     /* Add Channel Button (floating, right-middle of channel container) */
     .add-channel-btn {
       position: absolute;
@@ -434,7 +454,11 @@
       <h2>Add New Task</h2>
       <div class="form-group">
         <label for="taskContent">Task Content</label>
-        <input type="text" id="taskContent" placeholder="Enter task content" />
+        <input type="text" id="taskContentInput" placeholder="Enter task content" />
+      </div>
+      <div class="form-group">
+        <label for="taskDueDate">Due Date (Optional)</label>
+        <input type="datetime-local" id="taskDueDate" />
       </div>
       <input type="hidden" id="channelId" />
       <div class="modal-buttons">
@@ -450,7 +474,17 @@
       <h2>Task Details</h2>
       <div class="form-group">
         <label>Content</label>
-        <p id="taskDetailContent" style="min-height: 100px; background-color: #f9f9f9; padding: 10px; border-radius: 4px;"></p>
+        <div class="editor-toolbar">
+          <button onclick="formatDoc('bold')"><b>B</b></button>
+          <button onclick="formatDoc('italic')"><i>I</i></button>
+          <button onclick="formatDoc('underline')"><u>U</u></button>
+        </div>
+        <div id="taskDetailContent" contenteditable="true"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666;">
+        <div id="taskDetailCreatedAt"></div>
+        <div id="taskDetailDueDate"></div>
+        <div id="taskDetailWorkingSince"></div>
       </div>
       <div class="form-group" style="margin-bottom: 5px;">
         <label style="font-size: 12px;">Channel</label>
@@ -462,6 +496,7 @@
       </div>
       <div class="modal-buttons">
         <button class="cancel-btn" id="closeTaskDetailBtn">Close</button>
+        <button class="save-btn" id="saveTaskDetailBtn">Save</button>
       </div>
     </div>
   </div>
@@ -514,16 +549,69 @@
     const taskModal = document.getElementById('taskModal');
     const helpModal = document.getElementById('helpModal');
     const taskDetailModal = document.getElementById('taskDetailModal');
+    let currentEditingTask = null;
 
-    function openTaskDetailModal(content, channelName, groupName) {
-      document.getElementById('taskDetailContent').textContent = content;
-      document.getElementById('taskDetailChannel').textContent = channelName;
-      document.getElementById('taskDetailGroup').textContent = groupName;
+    function formatDoc(cmd, value=null) {
+      if (value) {
+        document.execCommand(cmd, false, value);
+      } else {
+        document.execCommand(cmd);
+      }
+    }
+
+    function openTaskDetailModal(taskId) {
+      const taskData = findTask(taskId);
+      if (!taskData) return;
+      currentEditingTask = taskData;
+      const task = taskData.task;
+      document.getElementById('taskDetailContent').innerHTML = task.content;
+      document.getElementById('taskDetailChannel').textContent = taskData.channelName;
+      document.getElementById('taskDetailGroup').textContent = taskData.groupName;
+
+      const createdAt = document.getElementById('taskDetailCreatedAt');
+      const dueDate = document.getElementById('taskDetailDueDate');
+      const workingSince = document.getElementById('taskDetailWorkingSince');
+
+      createdAt.textContent = task.createdAt ? `Created: ${new Date(task.createdAt).toLocaleString()}` : '';
+      dueDate.textContent = task.dueDate ? `Due: ${new Date(task.dueDate).toLocaleString()}` : '';
+      workingSince.textContent = task.workingStartTime ? `Working since: ${new Date(task.workingStartTime).toLocaleString()}` : '';
+
       taskDetailModal.style.display = 'flex';
     }
 
     function closeTaskDetailModal() {
       taskDetailModal.style.display = 'none';
+      currentEditingTask = null;
+    }
+
+    function saveTaskDetail() {
+      if (!currentEditingTask) return;
+      const newContent = document.getElementById('taskDetailContent').innerHTML;
+      currentEditingTask.task.content = newContent;
+      saveData();
+      renderChannels();
+      renderWorkingTasks();
+      renderDoneTasks();
+      closeTaskDetailModal();
+    }
+
+    function findTask(taskId) {
+      for (const channel of appData.channels) {
+        const task = channel.tasks.find(t => t.id === taskId);
+        if (task) {
+          const group = appData.groups.find(g => g.id === channel.groupId);
+          return { task, channelName: channel.name, groupName: group.name };
+        }
+      }
+      let foundTask = appData.workingTasks.find(t => t.id === taskId);
+      if(foundTask) {
+        return { task: foundTask, channelName: foundTask.channelName, groupName: foundTask.groupName };
+      }
+      foundTask = appData.doneTasks.find(t => t.id === taskId);
+      if(foundTask) {
+        return { task: foundTask, channelName: foundTask.channelName, groupName: foundTask.groupName };
+      }
+      return null;
     }
 
     function openHelpModal() {
@@ -543,15 +631,12 @@
 
     // Utility: format task content by adding a line break every 7 words
     function formatTaskContent(text) {
-      const words = text.split(' ');
-      let formatted = '';
-      for (let i = 0; i < words.length; i++) {
-        formatted += words[i] + ' ';
-        if ((i + 1) % 7 === 0 && (i + 1) < words.length) {
-          formatted += '<br>';
+        if (!text) return '';
+        const plainText = text.replace(/<[^>]+>/g, ''); // Strip HTML tags
+        if (plainText.length > 100) {
+            return plainText.substring(0, 100) + '...';
         }
-      }
-      return formatted.trim();
+        return plainText;
     }
 
     // Load data from local storage
@@ -731,7 +816,7 @@
       viewBtn.innerHTML = '&#128065;'; // Eye icon
       viewBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        openTaskDetailModal(task.content, channelName, groupName);
+        openTaskDetailModal(task.id);
       });
       taskElement.appendChild(viewBtn);
 
@@ -809,7 +894,10 @@
           id: 'dt' + Date.now(),
           content: task.content,
           channelName: task.channelName,
-          groupName: task.groupName
+          groupName: task.groupName,
+          createdAt: task.createdAt,
+          dueDate: task.dueDate,
+          workingStartTime: task.workingStartTime
         });
         appData.workingTasks.splice(taskIndex, 1);
         saveData();
@@ -879,7 +967,10 @@
               id: 'wt' + Date.now(),
               content: task.content,
               channelName: channelName,
-              groupName: groupName
+              groupName: groupName,
+              createdAt: task.createdAt,
+              dueDate: task.dueDate,
+              workingStartTime: new Date().toISOString()
             });
             channel.tasks.splice(taskIndex, 1);
             saveData();
@@ -895,7 +986,10 @@
             id: 'dt' + Date.now(),
             content: task.content,
             channelName: task.channelName,
-            groupName: task.groupName
+            groupName: task.groupName,
+            createdAt: task.createdAt,
+            dueDate: task.dueDate,
+            workingStartTime: task.workingStartTime
           });
           appData.workingTasks.splice(taskIndex, 1);
           saveData();
@@ -927,11 +1021,16 @@
     }
 
     // Add new task to a channel
-    function addTask(content, channelId) {
+    function addTask(content, channelId, dueDate) {
       const taskId = 't' + Date.now();
       const channel = appData.channels.find(c => c.id === channelId);
       if (channel) {
-        channel.tasks.push({ id: taskId, content });
+        channel.tasks.push({ 
+            id: taskId, 
+            content, 
+            createdAt: new Date().toISOString(),
+            dueDate: dueDate ? new Date(dueDate).toISOString() : null
+        });
         saveData();
         renderChannels();
       }
@@ -992,19 +1091,22 @@
     function initTaskModal() {
       const saveTaskBtn = document.getElementById('saveTaskBtn');
       const cancelTaskBtn = document.getElementById('cancelTaskBtn');
-      const taskContentInput = document.getElementById('taskContent');
+      const taskContentInput = document.getElementById('taskContentInput');
+      const taskDueDateInput = document.getElementById('taskDueDate');
       saveTaskBtn.addEventListener('click', () => {
         const taskContent = taskContentInput.value.trim();
         const channelId = document.getElementById('channelId').value;
+        const dueDate = taskDueDateInput.value;
         if (taskContent && channelId) {
-          addTask(taskContent, channelId);
+          addTask(taskContent, channelId, dueDate);
           closeTaskModal();
         }
       });
       cancelTaskBtn.addEventListener('click', closeTaskModal);
     }
     function openTaskModal(channelId) {
-      document.getElementById('taskContent').value = '';
+      document.getElementById('taskContentInput').value = '';
+      document.getElementById('taskDueDate').value = '';
       document.getElementById('channelId').value = channelId;
       taskModal.style.display = 'flex';
     }
@@ -1017,6 +1119,7 @@
     }
     function initTaskDetailModal() {
         document.getElementById('closeTaskDetailBtn').addEventListener('click', closeTaskDetailModal);
+        document.getElementById('saveTaskDetailBtn').addEventListener('click', saveTaskDetail);
     }
 
     // Export app data as JSON file
