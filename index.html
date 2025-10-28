@@ -277,6 +277,46 @@
       font-weight: bold;
     }
 
+    /* Related Tasks Pills */
+    #relatedTasksList {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .related-task-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .related-task-pill-content {
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .related-task-pill-content:hover {
+      background-color: #f0f0f0;
+      border-color: #ccc;
+    }
+    .remove-related-task {
+      font-size: 18px;
+      line-height: 1;
+      font-weight: bold;
+      cursor: pointer;
+      color: #aaa;
+      transition: color 0.2s;
+      padding: 4px;
+    }
+    .remove-related-task:hover {
+      color: #333;
+    }
+
     /* Modal Styles */
     .modal {
       display: none;
@@ -710,13 +750,50 @@
         relatedTaskIds.forEach(taskId => {
             const taskData = findTask(taskId);
             if (taskData) {
-                const li = document.createElement('li');
-                li.textContent = `${taskData.task.id}: ${formatTaskContent(taskData.task.content)}`;
-                li.style.cursor = 'pointer';
-                li.addEventListener('click', () => openTaskDetailModal(taskId));
-                relatedTasksList.appendChild(li);
+                const pill = document.createElement('li');
+                pill.className = 'related-task-pill';
+                
+                const taskContent = document.createElement('span');
+                taskContent.className = 'related-task-pill-content';
+                taskContent.textContent = formatTaskContent(taskData.task.content);
+                taskContent.addEventListener('click', () => openTaskDetailModal(taskId));
+                
+                const removeBtn = document.createElement('span');
+                removeBtn.className = 'remove-related-task';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeRelatedTask(taskId);
+                });
+
+                pill.appendChild(taskContent);
+                pill.appendChild(removeBtn);
+                relatedTasksList.appendChild(pill);
             }
         });
+    }
+
+    function removeRelatedTask(taskIdToRemove) {
+        if (!currentEditingTask) return;
+
+        // Remove from current task's related tasks
+        const indexInCurrent = currentEditingTask.task.relatedTasks.indexOf(taskIdToRemove);
+        if (indexInCurrent > -1) {
+            currentEditingTask.task.relatedTasks.splice(indexInCurrent, 1);
+        }
+
+        // Remove back-reference from the other task
+        const otherTaskData = findTask(taskIdToRemove);
+        if (otherTaskData && otherTaskData.task.relatedTasks) {
+            const indexInOther = otherTaskData.task.relatedTasks.indexOf(currentEditingTask.task.id);
+            if (indexInOther > -1) {
+                otherTaskData.task.relatedTasks.splice(indexInOther, 1);
+            }
+        }
+
+        // Re-render the related tasks list for the current modal
+        renderRelatedTasks(currentEditingTask.task.relatedTasks);
+        saveData(); // Save changes
     }
 
     function showTaskSuggestions(query) {
@@ -736,7 +813,7 @@
 
         filteredTasks.forEach(task => {
             const suggestionDiv = document.createElement('div');
-            suggestionDiv.textContent = `${task.id}: ${formatTaskContent(task.content)}`;
+            suggestionDiv.textContent = formatTaskContent(task.content);
             suggestionDiv.className = 'autocomplete-suggestion';
             suggestionDiv.addEventListener('click', () => selectTaskSuggestion(task.id));
             suggestionsContainer.appendChild(suggestionDiv);
