@@ -586,6 +586,10 @@
           <label>Working since</label>
           <p id="taskDetailWorkingSince"></p>
         </div>
+        <div class="detail-item" id="completedAtContainer" style="display: none;">
+          <label>Completed</label>
+          <p id="taskDetailCompletedAt"></p>
+        </div>
       </div>
 
       <div id="relatedTasksContainer" class="form-group">
@@ -671,10 +675,12 @@
       const createdAt = document.getElementById('taskDetailCreatedAt');
       const dueDate = document.getElementById('taskDetailDueDate');
       const workingSince = document.getElementById('taskDetailWorkingSince');
+      const completedAt = document.getElementById('taskDetailCompletedAt');
       
       const createdAtContainer = document.getElementById('createdAtContainer');
       const dueDateContainer = document.getElementById('dueDateContainer');
       const workingSinceContainer = document.getElementById('workingSinceContainer');
+      const completedAtContainer = document.getElementById('completedAtContainer');
 
       if (task.createdAt) {
         createdAt.textContent = new Date(task.createdAt).toLocaleString();
@@ -695,6 +701,13 @@
         workingSinceContainer.style.display = 'block';
       } else {
         workingSinceContainer.style.display = 'none';
+      }
+
+      if (task.completedAt) {
+        completedAt.textContent = new Date(task.completedAt).toLocaleString();
+        completedAtContainer.style.display = 'block';
+      } else {
+        completedAtContainer.style.display = 'none';
       }
 
       renderRelatedTasks(task.relatedTasks || []);
@@ -1030,11 +1043,11 @@
       taskElement.setAttribute('data-channel-name', channelName);
       taskElement.setAttribute('data-group-name', groupName);
 
-      if (showMeta) {
-        const taskMeta = document.createElement('div');
-        taskMeta.className = 'task-meta';
-        taskMeta.textContent = `Channel: ${channelName} | Group: ${groupName}`;
-        taskElement.appendChild(taskMeta);
+      if (isDone && task.completedAt) {
+        const completedAtMeta = document.createElement('div');
+        completedAtMeta.className = 'task-meta';
+        completedAtMeta.textContent = `Completed: ${new Date(task.completedAt).toLocaleString()}`;
+        taskElement.appendChild(completedAtMeta);
       }
 
       const taskContent = document.createElement('div');
@@ -1129,7 +1142,8 @@
           groupName: task.groupName,
           createdAt: task.createdAt,
           dueDate: task.dueDate,
-          workingStartTime: task.workingStartTime
+          workingStartTime: task.workingStartTime,
+          completedAt: new Date().toISOString()
         });
         appData.workingTasks.splice(taskIndex, 1);
         saveData();
