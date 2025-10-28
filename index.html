@@ -488,6 +488,7 @@
 
     <!-- Add Group Button and Group Filter Select -->
     <div class="group-controls">
+      <button class="add-group-btn" id="helpBtn">?</button>
       <button class="add-group-btn" id="addGroupBtn">+</button>
       <select id="groupFilterSelect" class="group-select">
         <!-- Options will be populated by JS -->
@@ -1458,6 +1459,8 @@
       initTaskModal();
       initHelpModal();
       initTaskDetailModal();
+      const helpBtn = document.getElementById('helpBtn');
+      helpBtn.addEventListener('click', openHelpModal);
       addGroupBtn.addEventListener('click', openGroupModal);
       addChannelBtn.addEventListener('click', openChannelModal);
       makeDraggable(document.getElementById('workingBox'));
