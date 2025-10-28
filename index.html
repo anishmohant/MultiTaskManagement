@@ -252,6 +252,31 @@
       border: 1.5px solid #7fb3ff;
     }
 
+    /* Task Detail Styles */
+    .task-details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+      margin-bottom: 15px;
+    }
+    .detail-item {
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .detail-item label {
+      font-size: 12px;
+      color: #666;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .detail-item p {
+      font-size: 14px;
+      margin: 0;
+      font-weight: bold;
+    }
+
     /* Modal Styles */
     .modal {
       display: none;
@@ -499,19 +524,29 @@
         </div>
         <div id="taskDetailContent" contenteditable="true"></div>
       </div>
-      <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666;">
-        <div id="taskDetailCreatedAt"></div>
-        <div id="taskDetailDueDate"></div>
-        <div id="taskDetailWorkingSince"></div>
+      <div class="task-details-grid">
+        <div class="detail-item">
+          <label>Channel</label>
+          <p id="taskDetailChannel"></p>
+        </div>
+        <div class="detail-item">
+          <label>Group</label>
+          <p id="taskDetailGroup"></p>
+        </div>
+        <div class="detail-item" id="createdAtContainer">
+          <label>Created</label>
+          <p id="taskDetailCreatedAt"></p>
+        </div>
+        <div class="detail-item" id="dueDateContainer">
+          <label>Due</label>
+          <p id="taskDetailDueDate"></p>
+        </div>
+        <div class="detail-item" id="workingSinceContainer">
+          <label>Working since</label>
+          <p id="taskDetailWorkingSince"></p>
+        </div>
       </div>
-      <div class="form-group" style="margin-bottom: 5px;">
-        <label style="font-size: 12px;">Channel</label>
-        <p id="taskDetailChannel" style="font-size: 14px; margin: 0;"></p>
-      </div>
-      <div class="form-group" style="margin-bottom: 5px;">
-        <label style="font-size: 12px;">Group</label>
-        <p id="taskDetailGroup" style="font-size: 14px; margin: 0;"></p>
-      </div>
+
       <div id="relatedTasksContainer" class="form-group">
         <label>Related Tasks</label>
         <input type="text" id="relatedTaskInput" placeholder="Search for a task to link...">
@@ -595,10 +630,31 @@
       const createdAt = document.getElementById('taskDetailCreatedAt');
       const dueDate = document.getElementById('taskDetailDueDate');
       const workingSince = document.getElementById('taskDetailWorkingSince');
+      
+      const createdAtContainer = document.getElementById('createdAtContainer');
+      const dueDateContainer = document.getElementById('dueDateContainer');
+      const workingSinceContainer = document.getElementById('workingSinceContainer');
 
-      createdAt.textContent = task.createdAt ? `Created: ${new Date(task.createdAt).toLocaleString()}` : '';
-      dueDate.textContent = task.dueDate ? `Due: ${new Date(task.dueDate).toLocaleString()}` : '';
-      workingSince.textContent = task.workingStartTime ? `Working since: ${new Date(task.workingStartTime).toLocaleString()}` : '';
+      if (task.createdAt) {
+        createdAt.textContent = new Date(task.createdAt).toLocaleString();
+        createdAtContainer.style.display = 'block';
+      } else {
+        createdAtContainer.style.display = 'none';
+      }
+
+      if (task.dueDate) {
+        dueDate.textContent = new Date(task.dueDate).toLocaleString();
+        dueDateContainer.style.display = 'block';
+      } else {
+        dueDateContainer.style.display = 'none';
+      }
+
+      if (task.workingStartTime) {
+        workingSince.textContent = new Date(task.workingStartTime).toLocaleString();
+        workingSinceContainer.style.display = 'block';
+      } else {
+        workingSinceContainer.style.display = 'none';
+      }
 
       renderRelatedTasks(task.relatedTasks || []);
 
