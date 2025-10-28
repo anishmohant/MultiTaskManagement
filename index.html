@@ -328,6 +328,24 @@
       overflow-y: auto;
     }
 
+    #relatedTasksContainer .autocomplete-suggestions {
+        border: 1px solid #ddd;
+        max-height: 150px;
+        overflow-y: auto;
+        position: absolute;
+        background-color: white;
+        z-index: 1001;
+    }
+
+    #relatedTasksContainer .autocomplete-suggestion {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    #relatedTasksContainer .autocomplete-suggestion:hover {
+        background-color: #f0f0f0;
+    }
+
     /* Add Channel Button (floating, right-middle of channel container) */
     .add-channel-btn {
       position: absolute;
@@ -494,6 +512,12 @@
         <label style="font-size: 12px;">Group</label>
         <p id="taskDetailGroup" style="font-size: 14px; margin: 0;"></p>
       </div>
+      <div id="relatedTasksContainer" class="form-group">
+        <label>Related Tasks</label>
+        <input type="text" id="relatedTaskInput" placeholder="Search for a task to link...">
+        <div id="relatedTaskSuggestions" class="autocomplete-suggestions"></div>
+        <ul id="relatedTasksList"></ul>
+      </div>
       <div class="modal-buttons">
         <button class="cancel-btn" id="closeTaskDetailBtn">Close</button>
         <button class="save-btn" id="saveTaskDetailBtn">Save</button>
@@ -576,6 +600,8 @@
       dueDate.textContent = task.dueDate ? `Due: ${new Date(task.dueDate).toLocaleString()}` : '';
       workingSince.textContent = task.workingStartTime ? `Working since: ${new Date(task.workingStartTime).toLocaleString()}` : '';
 
+      renderRelatedTasks(task.relatedTasks || []);
+
       taskDetailModal.style.display = 'flex';
     }
 
@@ -612,6 +638,78 @@
         return { task: foundTask, channelName: foundTask.channelName, groupName: foundTask.groupName };
       }
       return null;
+    }
+
+    function getAllTasks() {
+        let allTasks = [];
+        appData.channels.forEach(c => allTasks = allTasks.concat(c.tasks));
+        allTasks = allTasks.concat(appData.workingTasks);
+        allTasks = allTasks.concat(appData.doneTasks);
+        return allTasks;
+    }
+
+    function renderRelatedTasks(relatedTaskIds) {
+        const relatedTasksList = document.getElementById('relatedTasksList');
+        relatedTasksList.innerHTML = '';
+        relatedTaskIds.forEach(taskId => {
+            const taskData = findTask(taskId);
+            if (taskData) {
+                const li = document.createElement('li');
+                li.textContent = `${taskData.task.id}: ${formatTaskContent(taskData.task.content)}`;
+                li.style.cursor = 'pointer';
+                li.addEventListener('click', () => openTaskDetailModal(taskId));
+                relatedTasksList.appendChild(li);
+            }
+        });
+    }
+
+    function showTaskSuggestions(query) {
+        const suggestionsContainer = document.getElementById('relatedTaskSuggestions');
+        suggestionsContainer.innerHTML = '';
+        if (!query) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+
+        const allTasks = getAllTasks();
+        const filteredTasks = allTasks.filter(task => 
+            (task.id.toLowerCase().includes(query.toLowerCase()) || 
+             task.content.toLowerCase().includes(query.toLowerCase())) && 
+             task.id !== currentEditingTask.task.id
+        );
+
+        filteredTasks.forEach(task => {
+            const suggestionDiv = document.createElement('div');
+            suggestionDiv.textContent = `${task.id}: ${formatTaskContent(task.content)}`;
+            suggestionDiv.className = 'autocomplete-suggestion';
+            suggestionDiv.addEventListener('click', () => selectTaskSuggestion(task.id));
+            suggestionsContainer.appendChild(suggestionDiv);
+        });
+
+        suggestionsContainer.style.display = filteredTasks.length > 0 ? 'block' : 'none';
+    }
+
+    function selectTaskSuggestion(taskId) {
+        if (!currentEditingTask.task.relatedTasks) {
+            currentEditingTask.task.relatedTasks = [];
+        }
+        if (!currentEditingTask.task.relatedTasks.includes(taskId)) {
+            currentEditingTask.task.relatedTasks.push(taskId);
+            renderRelatedTasks(currentEditingTask.task.relatedTasks);
+
+            // Add back-reference
+            const otherTaskData = findTask(taskId);
+            if (otherTaskData) {
+                if (!otherTaskData.task.relatedTasks) {
+                    otherTaskData.task.relatedTasks = [];
+                }
+                if (!otherTaskData.task.relatedTasks.includes(currentEditingTask.task.id)) {
+                    otherTaskData.task.relatedTasks.push(currentEditingTask.task.id);
+                }
+            }
+        }
+        document.getElementById('relatedTaskInput').value = '';
+        document.getElementById('relatedTaskSuggestions').style.display = 'none';
     }
 
     function openHelpModal() {
@@ -970,7 +1068,8 @@
               groupName: groupName,
               createdAt: task.createdAt,
               dueDate: task.dueDate,
-              workingStartTime: new Date().toISOString()
+              workingStartTime: new Date().toISOString(),
+              relatedTasks: task.relatedTasks || []
             });
             channel.tasks.splice(taskIndex, 1);
             saveData();
@@ -989,7 +1088,8 @@
             groupName: task.groupName,
             createdAt: task.createdAt,
             dueDate: task.dueDate,
-            workingStartTime: task.workingStartTime
+            workingStartTime: task.workingStartTime,
+            relatedTasks: task.relatedTasks || []
           });
           appData.workingTasks.splice(taskIndex, 1);
           saveData();
@@ -1029,7 +1129,8 @@
             id: taskId, 
             content, 
             createdAt: new Date().toISOString(),
-            dueDate: dueDate ? new Date(dueDate).toISOString() : null
+            dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+            relatedTasks: []
         });
         saveData();
         renderChannels();
@@ -1120,6 +1221,8 @@
     function initTaskDetailModal() {
         document.getElementById('closeTaskDetailBtn').addEventListener('click', closeTaskDetailModal);
         document.getElementById('saveTaskDetailBtn').addEventListener('click', saveTaskDetail);
+        const relatedTaskInput = document.getElementById('relatedTaskInput');
+        relatedTaskInput.addEventListener('input', () => showTaskSuggestions(relatedTaskInput.value));
     }
 
     // Export app data as JSON file
