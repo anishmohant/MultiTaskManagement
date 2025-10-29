@@ -1555,23 +1555,41 @@
     let filteredChannels = [];
     let selectedChannelIdx = -1;
 
-    // Open search popup on "/" key
+    // All keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-      if (
-        e.key === '/' &&
-        !channelSearchActive &&
-        document.activeElement.tagName !== 'INPUT' &&
-        document.activeElement.tagName !== 'TEXTAREA' &&
-        !e.ctrlKey && !e.metaKey && !e.altKey
-      ) {
+      const isInputActive = document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.isContentEditable;
+
+      // Close modals with Escape key
+      if (e.key === 'Escape') {
+        if (channelSearchActive) {
+          closeChannelSearch();
+        }
+        if (helpModal.style.display === 'flex') {
+          closeHelpModal();
+        }
+        if (taskDetailModal.style.display === 'flex') {
+          closeTaskDetailModal();
+        }
+        return; // Prevent other shortcuts from firing
+      }
+
+      // Shortcuts that shouldn't work when typing in an input
+      if (isInputActive && document.activeElement.id !== 'channelSearchInput') return;
+
+      // Open channel search with "/"
+      if (e.key === '/' && !channelSearchActive && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         channelSearchPopup.style.display = 'block';
         channelSearchInput.value = '';
         channelSearchInput.focus();
         updateChannelSearchResults('');
         channelSearchActive = true;
-      } else if (channelSearchActive && e.key === 'Escape') {
-        closeChannelSearch();
+      }
+      
+      // Open help with "q"
+      if (e.key === 'q' && !channelSearchActive) {
+        e.preventDefault();
+        openHelpModal();
       }
     });
 
@@ -1580,7 +1598,7 @@
       updateChannelSearchResults(e.target.value);
     });
 
-    // Keyboard navigation
+    // Keyboard navigation for channel search
     channelSearchInput.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -1601,7 +1619,7 @@
       }
     });
 
-    // Click outside to close
+    // Click outside to close channel search
     document.addEventListener('mousedown', (e) => {
       if (channelSearchActive && !channelSearchPopup.contains(e.target)) {
         closeChannelSearch();
@@ -1666,16 +1684,6 @@
         box.style.display = (!q || name.includes(q)) ? '' : 'none';
       });
     }
-
-    // Help modal open with 'q' key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'q' && !channelSearchActive && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-        e.preventDefault();
-        openHelpModal();
-      } else if (e.key === 'Escape') {
-        closeHelpModal();
-      }
-    });
 
     // Update channels when group filter changes
     groupFilterSelect.addEventListener('change', renderChannels);
