@@ -107,6 +107,7 @@
     }
     .task-content {
       margin-right: 50px;
+      color: black;
     }
     .delete-btn {
       position: absolute;
@@ -117,7 +118,7 @@
       height: 20px;
       border-radius: 50%;
       background-color: rgba(255, 255, 255, 0.3);
-      color: white;
+      /* color: white; */
       font-size: 14px;
       border: none;
       cursor: pointer;
@@ -991,7 +992,7 @@
         // Render tasks in this channel
         if (channel.tasks && channel.tasks.length > 0) {
           channel.tasks.forEach(task => {
-            const taskElement = createTaskElement(task, channel.name, group.name, false, true);
+            const taskElement = createTaskElement(task, channel.name, group.name, group.color, false, true);
             channelTasksDiv.appendChild(taskElement);
           });
         }
@@ -1022,7 +1023,7 @@
       workingTasksDiv.innerHTML = '';
       appData.workingTasks.forEach(task => {
         // showMeta: true, showDelete: false, showMoveButton: true
-        const taskElement = createTaskElement(task, task.channelName, task.groupName, true, false, true);
+        const taskElement = createTaskElement(task, task.channelName, task.groupName, task.groupColor, true, false, true);
         workingTasksDiv.appendChild(taskElement);
       });
     }
@@ -1032,7 +1033,7 @@
       doneTasksDiv.innerHTML = '';
       appData.doneTasks.forEach(task => {
         // showMeta: true, showDelete: true (with isDone true to trigger prompt deletion)
-        const taskElement = createTaskElement(task, task.channelName, task.groupName, true, true, false, true);
+        const taskElement = createTaskElement(task, task.channelName, task.groupName, task.groupColor, true, true, false, true);
         doneTasksDiv.appendChild(taskElement);
       });
     }
@@ -1042,18 +1043,21 @@
      * @param {object} task - The task data.
      * @param {string} channelName - The channel the task belongs to.
      * @param {string} groupName - The group of the channel.
+     * @param {string} groupColor - The color of the group.
      * @param {boolean} showMeta - Whether to show metadata.
      * @param {boolean} showDelete - Whether to show delete button.
      * @param {boolean} showMoveButton - Whether to show move-to-done button.
      * @param {boolean} isDone - Flag to indicate if the task is from the DONE box.
      */
-    function createTaskElement(task, channelName, groupName, showMeta = false, showDelete = false, showMoveButton = false, isDone = false) {
+    function createTaskElement(task, channelName, groupName, groupColor, showMeta = false, showDelete = false, showMoveButton = false, isDone = false) {
       const taskElement = document.createElement('div');
       taskElement.className = 'task';
       taskElement.setAttribute('draggable', 'true');
       taskElement.setAttribute('data-task-id', task.id);
       taskElement.setAttribute('data-channel-name', channelName);
       taskElement.setAttribute('data-group-name', groupName);
+      taskElement.setAttribute('data-group-color', groupColor);
+      taskElement.style.backgroundColor = groupColor;
 
       if (isDone && task.completedAt) {
         const completedAtMeta = document.createElement('div');
@@ -1152,6 +1156,7 @@
           content: task.content,
           channelName: task.channelName,
           groupName: task.groupName,
+          groupColor: task.groupColor,
           createdAt: task.createdAt,
           dueDate: task.dueDate,
           workingStartTime: task.workingStartTime,
@@ -1214,6 +1219,7 @@
       const taskId = draggedTask.getAttribute('data-task-id');
       const channelName = draggedTask.getAttribute('data-channel-name');
       const groupName = draggedTask.getAttribute('data-group-name');
+      const groupColor = draggedTask.getAttribute('data-group-color');
       if (isFromChannel && targetContainer.id === 'workingTasks') {
         const channelId = sourceContainer.getAttribute('data-channel-id');
         const channel = appData.channels.find(c => c.id === channelId);
@@ -1226,6 +1232,7 @@
               content: task.content,
               channelName: channelName,
               groupName: groupName,
+              groupColor: groupColor,
               createdAt: task.createdAt,
               dueDate: task.dueDate,
               workingStartTime: new Date().toISOString(),
@@ -1246,6 +1253,7 @@
             content: task.content,
             channelName: task.channelName,
             groupName: task.groupName,
+            groupColor: task.groupColor,
             createdAt: task.createdAt,
             dueDate: task.dueDate,
             workingStartTime: task.workingStartTime,
