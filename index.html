@@ -878,8 +878,8 @@
     function formatTaskContent(text) {
         if (!text) return '';
         const plainText = text.replace(/<[^>]+>/g, ''); // Strip HTML tags
-        if (plainText.length > 100) {
-            return plainText.substring(0, 100) + '...';
+        if (plainText.length > 50) {
+            return plainText.substring(0, 50) + '...';
         }
         return plainText;
     }
