@@ -337,6 +337,14 @@
       width: 90%;
       max-width: 500px;
     }
+
+    #taskDetailModal .modal-content {
+      width: 95%;
+      max-width: 95%;
+      height: 90%;
+      display: flex;
+      flex-direction: column;
+    }
     .modal h2 {
       margin-top: 0;
     }
@@ -391,6 +399,7 @@
       padding: 10px;
       min-height: 200px;
       overflow-y: auto;
+      flex-grow: 1;
     }
 
     #relatedTasksContainer .autocomplete-suggestions {
@@ -556,7 +565,7 @@
   <div class="modal" id="taskDetailModal">
     <div class="modal-content">
       <h2>Task Details</h2>
-      <div class="form-group">
+      <div class="form-group" style="display: flex; flex-direction: column;">
         <label>Content</label>
         <div class="editor-toolbar">
           <button onclick="formatDoc('bold')"><b>B</b></button>
