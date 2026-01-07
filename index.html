@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,12 +11,14 @@
       box-sizing: border-box;
       font-family: Arial, sans-serif;
     }
+
     body {
       margin: 0;
       padding: 0;
       background-color: #e5e5e5;
       color: #333;
     }
+
     .container {
       padding: 20px;
     }
@@ -28,10 +31,12 @@
       margin-bottom: 20px;
       padding-bottom: 10px;
     }
+
     .channel-container-wrapper {
       position: relative;
       width: 100%;
     }
+
     .channel-box {
       min-width: 300px;
       height: 450px;
@@ -41,9 +46,10 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       position: relative;
     }
+
     .channel-header {
       padding: 15px;
       border-bottom: 1px solid #eee;
@@ -52,18 +58,22 @@
       align-items: center;
       /* Group color will be applied inline */
     }
+
     .channel-header-text {
       flex-grow: 1;
     }
+
     .channel-title {
       margin: 0;
       font-size: 16px;
       font-weight: bold;
     }
+
     .channel-group {
       margin: 0;
       font-size: 14px;
     }
+
     .channel-tasks {
       flex-grow: 1;
       padding: 15px;
@@ -71,6 +81,7 @@
       background-color: #f9f9f9;
       position: relative;
     }
+
     .add-task-btn {
       width: 50px;
       height: 50px;
@@ -84,7 +95,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     /* Task Styles */
@@ -97,18 +108,22 @@
       color: white;
       position: relative;
     }
+
     .task:active {
       cursor: grabbing;
     }
+
     .task-meta {
       font-size: 10px;
       margin-bottom: 5px;
       color: #f0f0f0;
     }
+
     .task-content {
       margin-right: 50px;
       color: black;
     }
+
     .delete-btn {
       position: absolute;
       right: 10px;
@@ -125,8 +140,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
+
     .view-btn {
       position: absolute;
       right: 35px;
@@ -143,7 +159,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
 
     .delete-channel-btn {
@@ -159,8 +175,9 @@
       align-items: center;
       justify-content: center;
       margin-left: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
+
     .move-to-done-btn {
       background-color: #28a745;
       color: white;
@@ -178,6 +195,7 @@
       display: flex;
       gap: 20px;
     }
+
     .workflow-box {
       flex: 1;
       background-color: white;
@@ -185,13 +203,15 @@
       height: 400px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+
     .workflow-header {
       padding: 15px;
       border-bottom: 1px solid #eee;
       font-weight: bold;
     }
+
     .workflow-tasks {
       flex-grow: 1;
       padding: 15px;
@@ -209,16 +229,18 @@
       align-items: center;
       gap: 10px;
       z-index: 1100;
-      background: #3477dc51; /* semi-translucent white */
+      background: #3477dc51;
+      /* semi-translucent white */
       backdrop-filter: blur(14px) saturate(1.2);
       -webkit-backdrop-filter: blur(8px) saturate(1.2);
       border-radius: 18px;
       border: 1.5px solid rgba(180, 200, 255, 0.22);
-      box-shadow: 0 4px 24px rgba(80,120,200,0.10);
+      box-shadow: 0 4px 24px rgba(80, 120, 200, 0.10);
       padding: 8px 18px 8px 14px;
       margin: 0 0 10px 0;
       transition: background 0.2s, box-shadow 0.2s;
     }
+
     .add-group-btn {
       width: 44px;
       height: 44px;
@@ -231,13 +253,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.13);
       transition: background 0.2s;
       margin: 0;
     }
+
     .add-group-btn:hover {
       background-color: #5596e6;
     }
+
     .group-select {
       height: 44px;
       border-radius: 12px;
@@ -245,13 +269,14 @@
       color: #333;
       font-size: 16px;
       border: 1px solid #bbb;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       padding: 0 14px;
       min-width: 120px;
       max-width: 180px;
       outline: none;
       transition: border 0.2s;
     }
+
     .group-select:focus {
       border: 1.5px solid #7fb3ff;
     }
@@ -264,17 +289,20 @@
       margin-top: 15px;
       margin-bottom: 15px;
     }
+
     .detail-item {
       background-color: #f9f9f9;
       padding: 10px;
       border-radius: 5px;
     }
+
     .detail-item label {
       font-size: 12px;
       color: #666;
       display: block;
       margin-bottom: 5px;
     }
+
     .detail-item p {
       font-size: 14px;
       margin: 0;
@@ -290,11 +318,13 @@
       gap: 8px;
       margin-top: 10px;
     }
+
     .related-task-pill {
       display: flex;
       align-items: center;
       gap: 5px;
     }
+
     .related-task-pill-content {
       background-color: #f8f8f8;
       border: 1px solid #ddd;
@@ -304,10 +334,12 @@
       cursor: pointer;
       transition: background-color 0.2s, border-color 0.2s;
     }
+
     .related-task-pill-content:hover {
       background-color: #f0f0f0;
       border-color: #ccc;
     }
+
     .remove-related-task {
       font-size: 18px;
       line-height: 1;
@@ -317,6 +349,7 @@
       transition: color 0.2s;
       padding: 4px;
     }
+
     .remove-related-task:hover {
       color: #333;
     }
@@ -329,11 +362,12 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0,0,0,0.5);
+      background-color: rgba(0, 0, 0, 0.5);
       z-index: 1000;
       align-items: center;
       justify-content: center;
     }
+
     .modal-content {
       background-color: white;
       padding: 20px;
@@ -349,37 +383,46 @@
       display: flex;
       flex-direction: column;
     }
+
     .modal h2 {
       margin-top: 0;
     }
+
     .form-group {
       margin-bottom: 15px;
     }
+
     .form-group label {
       display: block;
       margin-bottom: 5px;
     }
-    .form-group input, .form-group select {
+
+    .form-group input,
+    .form-group select {
       width: 100%;
       padding: 8px;
       border: 1px solid #ddd;
       border-radius: 4px;
     }
+
     .modal-buttons {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
       margin-top: 20px;
     }
+
     .modal-buttons button {
       padding: 8px 15px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
     }
+
     .cancel-btn {
       background-color: #ddd;
     }
+
     .save-btn {
       background-color: #7fb3ff;
       color: white;
@@ -391,6 +434,7 @@
       padding: 5px;
       background-color: #f9f9f9;
     }
+
     .editor-toolbar button {
       margin-right: 5px;
       padding: 5px 10px;
@@ -398,6 +442,7 @@
       background-color: white;
       cursor: pointer;
     }
+
     #taskDetailContent {
       border: 1px solid #ddd;
       padding: 10px;
@@ -407,21 +452,21 @@
     }
 
     #relatedTasksContainer .autocomplete-suggestions {
-        border: 1px solid #ddd;
-        max-height: 150px;
-        overflow-y: auto;
-        position: absolute;
-        background-color: white;
-        z-index: 1001;
+      border: 1px solid #ddd;
+      max-height: 150px;
+      overflow-y: auto;
+      position: absolute;
+      background-color: white;
+      z-index: 1001;
     }
 
     #relatedTasksContainer .autocomplete-suggestion {
-        padding: 8px;
-        cursor: pointer;
+      padding: 8px;
+      cursor: pointer;
     }
 
     #relatedTasksContainer .autocomplete-suggestion:hover {
-        background-color: #f0f0f0;
+      background-color: #f0f0f0;
     }
 
     /* Add Channel Button (floating, right-middle of channel container) */
@@ -442,11 +487,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.13);
       transition: background 0.2s;
       margin: 0;
       pointer-events: auto;
     }
+
     .add-channel-btn:hover {
       background-color: #5596e6;
     }
@@ -460,25 +506,271 @@
       font-size: 15px !important;
       padding: 8px 16px !important;
       margin: 0 !important;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       transition: background 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 4px;
     }
+
     .export-import-btn:hover {
       background: #5596e6 !important;
     }
+
     .export-import-btn#deleteDataBtn {
       background: #ff5555 !important;
     }
+
     .export-import-btn#deleteDataBtn:hover {
       background: #d22c2c !important;
     }
+
+    /* Gantt Chart Styles */
+    #ganttView {
+      display: none;
+      flex-direction: column;
+      height: calc(100vh - 40px);
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+      position: relative;
+      margin-top: 20px;
+    }
+
+    .gantt-header-ui {
+      display: flex;
+      background: #fdfdfd;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 12px 20px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .gantt-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .gantt-container {
+      flex-grow: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gantt-sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      border-right: 1px solid #eee;
+      background: #fff;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .gantt-sidebar-header {
+      height: 80px;
+      border-bottom: 1px solid #eee;
+      padding: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      color: #444;
+      background: #fafafa;
+    }
+
+    .gantt-sidebar-content {
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .gantt-lane-label {
+      height: 48px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #f9f9f9;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #666;
+    }
+
+    .gantt-timeline-wrapper {
+      flex-grow: 1;
+      overflow: hidden;
+      position: relative;
+      cursor: grab;
+      background: #fff;
+    }
+
+    .gantt-timeline-wrapper:active {
+      cursor: grabbing;
+    }
+
+    .gantt-timeline-header {
+      height: 80px;
+      background: #fafafa;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .gantt-timeline-content {
+      position: relative;
+      height: calc(100% - 80px);
+      overflow-y: auto;
+      background-image:
+        linear-gradient(#f0f0f0 1px, transparent 1px);
+      background-size: 100% 48px;
+    }
+
+    .gantt-grid-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100000px;
+      /* Infinity simulation */
+      height: 100%;
+      pointer-events: none;
+      background-image: linear-gradient(90deg, #f0f0f0 1px, transparent 1px);
+    }
+
+    .gantt-month-label {
+      position: absolute;
+      top: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      padding-left: 10px;
+      border-left: 2px solid #7fb3ff;
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .gantt-day-label {
+      position: absolute;
+      top: 45px;
+      width: 40px;
+      /* will be dynamic */
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .gantt-day-label.today {
+      color: #7fb3ff;
+      font-weight: 700;
+    }
+
+    .gantt-task-bar {
+      position: absolute;
+      height: 32px;
+      background: linear-gradient(135deg, #7fb3ff, #6a96e6);
+      border-radius: 16px;
+      top: 8px;
+      /* Corrected: should be calculated per lane */
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 2px 6px rgba(127, 179, 255, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .gantt-task-bar:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(127, 179, 255, 0.6);
+      z-index: 10;
+    }
+
+    .gantt-lane {
+      position: relative;
+      height: 48px;
+    }
+
+    .view-switcher {
+      position: fixed;
+      top: 20px;
+      right: 70px;
+      /* Moved left to accommodate group controls if needed, but group controls are bottom right */
+      z-index: 1101;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 4px;
+      border-radius: 12px;
+      display: flex;
+      gap: 4px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .view-btn-toggle {
+      border: none;
+      background: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.2s;
+    }
+
+    .view-btn-toggle.active {
+      background: #7fb3ff;
+      color: white;
+      box-shadow: 0 2px 8px rgba(127, 179, 255, 0.4);
+    }
+
+    .gantt-zoom-btn {
+      background: #f0f0f0;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+    }
+
+    .gantt-zoom-btn:hover {
+      background: #e5e5e5;
+    }
+
+    .gantt-date-picker {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
   </style>
 </head>
+
 <body>
-  <div class="container">
+  <div class="view-switcher">
+    <button id="kanbanViewBtn" class="view-btn-toggle active" onclick="switchView('kanban')">Kanban</button>
+    <button id="ganttViewBtn" class="view-btn-toggle" onclick="switchView('gantt')">Timeline</button>
+  </div>
+
+  <div class="container" id="kanbanView">
     <!-- Channel Section: channel container with floating add channel button -->
     <div class="channel-container-wrapper">
       <div class="channel-container" id="channelContainer">
@@ -508,6 +800,38 @@
       </select>
     </div>
   </div>
+
+  <div id="ganttView" class="container" style="display: none;">
+    <div class="gantt-header-ui">
+      <div class="gantt-controls">
+        <button class="gantt-zoom-btn" onclick="changeZoom(-1)">−</button>
+        <button class="gantt-zoom-btn" onclick="changeZoom(1)">+</button>
+        <input type="date" class="gantt-date-picker" id="ganttDatePicker" onchange="jumpToDate(this.value)">
+        <button class="save-btn" onclick="jumpToToday()" style="padding: 6px 12px; font-size: 13px;">Today</button>
+      </div>
+      <div style="font-weight: bold; color: #444;" id="ganttCurrentRange">Timeline View</div>
+    </div>
+    <div class="gantt-container">
+      <div class="gantt-sidebar">
+        <div class="gantt-sidebar-header">Lane / Channel</div>
+        <div class="gantt-sidebar-content" id="ganttSidebarContent">
+          <!-- Lane labels here -->
+        </div>
+      </div>
+      <div class="gantt-timeline-wrapper" id="ganttTimelineWrapper">
+        <div class="gantt-timeline-header" id="ganttTimelineHeader">
+          <!-- Dates/Months here -->
+        </div>
+        <div class="gantt-timeline-content" id="ganttTimelineContent">
+          <div class="gantt-grid-lines" id="ganttGridLines"></div>
+          <div id="ganttLanesContainer" style="position: relative;">
+            <!-- Lanes and Task Bars here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Add Group Modal -->
   <div class="modal" id="groupModal">
@@ -619,8 +943,10 @@
   </div>
 
   <!-- Channel Search Popup -->
-  <div id="channelSearchPopup" style="display:none; position:fixed; left:30px; top:30px; z-index:2000; background:white; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.2); min-width:260px; max-width:350px; padding:12px;">
-    <input id="channelSearchInput" type="text" placeholder="Search channels..." style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc; margin-bottom:8px; font-size:16px;">
+  <div id="channelSearchPopup"
+    style="display:none; position:fixed; left:30px; top:30px; z-index:2000; background:white; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.2); min-width:260px; max-width:350px; padding:12px;">
+    <input id="channelSearchInput" type="text" placeholder="Search channels..."
+      style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc; margin-bottom:8px; font-size:16px;">
     <ul id="channelSearchResults" style="list-style:none; margin:0; padding:0; max-height:220px; overflow-y:auto;"></ul>
   </div>
 
@@ -668,7 +994,7 @@
     const taskDetailModal = document.getElementById('taskDetailModal');
     let currentEditingTask = null;
 
-    function formatDoc(cmd, value=null) {
+    function formatDoc(cmd, value = null) {
       if (value) {
         document.execCommand(cmd, false, value);
       } else {
@@ -689,7 +1015,7 @@
       const dueDate = document.getElementById('taskDetailDueDate');
       const workingSince = document.getElementById('taskDetailWorkingSince');
       const completedAt = document.getElementById('taskDetailCompletedAt');
-      
+
       const createdAtContainer = document.getElementById('createdAtContainer');
       const dueDateContainer = document.getElementById('dueDateContainer');
       const workingSinceContainer = document.getElementById('workingSinceContainer');
@@ -753,123 +1079,123 @@
         }
       }
       let foundTask = appData.workingTasks.find(t => t.id === taskId);
-      if(foundTask) {
+      if (foundTask) {
         return { task: foundTask, channelName: foundTask.channelName, groupName: foundTask.groupName };
       }
       foundTask = appData.doneTasks.find(t => t.id === taskId);
-      if(foundTask) {
+      if (foundTask) {
         return { task: foundTask, channelName: foundTask.channelName, groupName: foundTask.groupName };
       }
       return null;
     }
 
     function getAllTasks() {
-        let allTasks = [];
-        appData.channels.forEach(c => allTasks = allTasks.concat(c.tasks));
-        allTasks = allTasks.concat(appData.workingTasks);
-        allTasks = allTasks.concat(appData.doneTasks);
-        return allTasks;
+      let allTasks = [];
+      appData.channels.forEach(c => allTasks = allTasks.concat(c.tasks));
+      allTasks = allTasks.concat(appData.workingTasks);
+      allTasks = allTasks.concat(appData.doneTasks);
+      return allTasks;
     }
 
     function renderRelatedTasks(relatedTaskIds) {
-        const relatedTasksList = document.getElementById('relatedTasksList');
-        relatedTasksList.innerHTML = '';
-        relatedTaskIds.forEach(taskId => {
-            const taskData = findTask(taskId);
-            if (taskData) {
-                const pill = document.createElement('li');
-                pill.className = 'related-task-pill';
-                
-                const taskContent = document.createElement('span');
-                taskContent.className = 'related-task-pill-content';
-                taskContent.textContent = formatTaskContent(taskData.task.content);
-                taskContent.addEventListener('click', () => openTaskDetailModal(taskId));
-                
-                const removeBtn = document.createElement('span');
-                removeBtn.className = 'remove-related-task';
-                removeBtn.innerHTML = '&times;';
-                removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeRelatedTask(taskId);
-                });
+      const relatedTasksList = document.getElementById('relatedTasksList');
+      relatedTasksList.innerHTML = '';
+      relatedTaskIds.forEach(taskId => {
+        const taskData = findTask(taskId);
+        if (taskData) {
+          const pill = document.createElement('li');
+          pill.className = 'related-task-pill';
 
-                pill.appendChild(taskContent);
-                pill.appendChild(removeBtn);
-                relatedTasksList.appendChild(pill);
-            }
-        });
+          const taskContent = document.createElement('span');
+          taskContent.className = 'related-task-pill-content';
+          taskContent.textContent = formatTaskContent(taskData.task.content);
+          taskContent.addEventListener('click', () => openTaskDetailModal(taskId));
+
+          const removeBtn = document.createElement('span');
+          removeBtn.className = 'remove-related-task';
+          removeBtn.innerHTML = '&times;';
+          removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeRelatedTask(taskId);
+          });
+
+          pill.appendChild(taskContent);
+          pill.appendChild(removeBtn);
+          relatedTasksList.appendChild(pill);
+        }
+      });
     }
 
     function removeRelatedTask(taskIdToRemove) {
-        if (!currentEditingTask) return;
+      if (!currentEditingTask) return;
 
-        // Remove from current task's related tasks
-        const indexInCurrent = currentEditingTask.task.relatedTasks.indexOf(taskIdToRemove);
-        if (indexInCurrent > -1) {
-            currentEditingTask.task.relatedTasks.splice(indexInCurrent, 1);
+      // Remove from current task's related tasks
+      const indexInCurrent = currentEditingTask.task.relatedTasks.indexOf(taskIdToRemove);
+      if (indexInCurrent > -1) {
+        currentEditingTask.task.relatedTasks.splice(indexInCurrent, 1);
+      }
+
+      // Remove back-reference from the other task
+      const otherTaskData = findTask(taskIdToRemove);
+      if (otherTaskData && otherTaskData.task.relatedTasks) {
+        const indexInOther = otherTaskData.task.relatedTasks.indexOf(currentEditingTask.task.id);
+        if (indexInOther > -1) {
+          otherTaskData.task.relatedTasks.splice(indexInOther, 1);
         }
+      }
 
-        // Remove back-reference from the other task
-        const otherTaskData = findTask(taskIdToRemove);
-        if (otherTaskData && otherTaskData.task.relatedTasks) {
-            const indexInOther = otherTaskData.task.relatedTasks.indexOf(currentEditingTask.task.id);
-            if (indexInOther > -1) {
-                otherTaskData.task.relatedTasks.splice(indexInOther, 1);
-            }
-        }
-
-        // Re-render the related tasks list for the current modal
-        renderRelatedTasks(currentEditingTask.task.relatedTasks);
-        saveData(); // Save changes
+      // Re-render the related tasks list for the current modal
+      renderRelatedTasks(currentEditingTask.task.relatedTasks);
+      saveData(); // Save changes
     }
 
     function showTaskSuggestions(query) {
-        const suggestionsContainer = document.getElementById('relatedTaskSuggestions');
-        suggestionsContainer.innerHTML = '';
-        if (!query) {
-            suggestionsContainer.style.display = 'none';
-            return;
-        }
+      const suggestionsContainer = document.getElementById('relatedTaskSuggestions');
+      suggestionsContainer.innerHTML = '';
+      if (!query) {
+        suggestionsContainer.style.display = 'none';
+        return;
+      }
 
-        const allTasks = getAllTasks();
-        const filteredTasks = allTasks.filter(task => 
-            (task.id.toLowerCase().includes(query.toLowerCase()) || 
-             task.content.toLowerCase().includes(query.toLowerCase())) && 
-             task.id !== currentEditingTask.task.id
-        );
+      const allTasks = getAllTasks();
+      const filteredTasks = allTasks.filter(task =>
+        (task.id.toLowerCase().includes(query.toLowerCase()) ||
+          task.content.toLowerCase().includes(query.toLowerCase())) &&
+        task.id !== currentEditingTask.task.id
+      );
 
-        filteredTasks.forEach(task => {
-            const suggestionDiv = document.createElement('div');
-            suggestionDiv.textContent = formatTaskContent(task.content);
-            suggestionDiv.className = 'autocomplete-suggestion';
-            suggestionDiv.addEventListener('click', () => selectTaskSuggestion(task.id));
-            suggestionsContainer.appendChild(suggestionDiv);
-        });
+      filteredTasks.forEach(task => {
+        const suggestionDiv = document.createElement('div');
+        suggestionDiv.textContent = formatTaskContent(task.content);
+        suggestionDiv.className = 'autocomplete-suggestion';
+        suggestionDiv.addEventListener('click', () => selectTaskSuggestion(task.id));
+        suggestionsContainer.appendChild(suggestionDiv);
+      });
 
-        suggestionsContainer.style.display = filteredTasks.length > 0 ? 'block' : 'none';
+      suggestionsContainer.style.display = filteredTasks.length > 0 ? 'block' : 'none';
     }
 
     function selectTaskSuggestion(taskId) {
-        if (!currentEditingTask.task.relatedTasks) {
-            currentEditingTask.task.relatedTasks = [];
-        }
-        if (!currentEditingTask.task.relatedTasks.includes(taskId)) {
-            currentEditingTask.task.relatedTasks.push(taskId);
-            renderRelatedTasks(currentEditingTask.task.relatedTasks);
+      if (!currentEditingTask.task.relatedTasks) {
+        currentEditingTask.task.relatedTasks = [];
+      }
+      if (!currentEditingTask.task.relatedTasks.includes(taskId)) {
+        currentEditingTask.task.relatedTasks.push(taskId);
+        renderRelatedTasks(currentEditingTask.task.relatedTasks);
 
-            // Add back-reference
-            const otherTaskData = findTask(taskId);
-            if (otherTaskData) {
-                if (!otherTaskData.task.relatedTasks) {
-                    otherTaskData.task.relatedTasks = [];
-                }
-                if (!otherTaskData.task.relatedTasks.includes(currentEditingTask.task.id)) {
-                    otherTaskData.task.relatedTasks.push(currentEditingTask.task.id);
-                }
-            }
+        // Add back-reference
+        const otherTaskData = findTask(taskId);
+        if (otherTaskData) {
+          if (!otherTaskData.task.relatedTasks) {
+            otherTaskData.task.relatedTasks = [];
+          }
+          if (!otherTaskData.task.relatedTasks.includes(currentEditingTask.task.id)) {
+            otherTaskData.task.relatedTasks.push(currentEditingTask.task.id);
+          }
         }
-        document.getElementById('relatedTaskInput').value = '';
-        document.getElementById('relatedTaskSuggestions').style.display = 'none';
+      }
+      document.getElementById('relatedTaskInput').value = '';
+      document.getElementById('relatedTaskSuggestions').style.display = 'none';
     }
 
     function openHelpModal() {
@@ -889,12 +1215,12 @@
 
     // Utility: format task content by adding a line break every 7 words
     function formatTaskContent(text) {
-        if (!text) return '';
-        const plainText = text.replace(/<[^>]+>/g, ''); // Strip HTML tags
-        if (plainText.length > 50) {
-            return plainText.substring(0, 50) + '...';
-        }
-        return plainText;
+      if (!text) return '';
+      const plainText = text.replace(/<[^>]+>/g, ''); // Strip HTML tags
+      if (plainText.length > 50) {
+        return plainText.substring(0, 50) + '...';
+      }
+      return plainText;
     }
 
     // Load data from local storage
@@ -1293,12 +1619,12 @@
       const taskId = 't' + Date.now();
       const channel = appData.channels.find(c => c.id === channelId);
       if (channel) {
-        channel.tasks.push({ 
-            id: taskId, 
-            content, 
-            createdAt: new Date().toISOString(),
-            dueDate: dueDate ? new Date(dueDate).toISOString() : null,
-            relatedTasks: []
+        channel.tasks.push({
+          id: taskId,
+          content,
+          createdAt: new Date().toISOString(),
+          dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+          relatedTasks: []
         });
         saveData();
         renderChannels();
@@ -1387,10 +1713,10 @@
       closeHelpBtn.addEventListener('click', closeHelpModal);
     }
     function initTaskDetailModal() {
-        document.getElementById('closeTaskDetailBtn').addEventListener('click', closeTaskDetailModal);
-        document.getElementById('saveTaskDetailBtn').addEventListener('click', saveTaskDetail);
-        const relatedTaskInput = document.getElementById('relatedTaskInput');
-        relatedTaskInput.addEventListener('input', () => showTaskSuggestions(relatedTaskInput.value));
+      document.getElementById('closeTaskDetailBtn').addEventListener('click', closeTaskDetailModal);
+      document.getElementById('saveTaskDetailBtn').addEventListener('click', saveTaskDetail);
+      const relatedTaskInput = document.getElementById('relatedTaskInput');
+      relatedTaskInput.addEventListener('input', () => showTaskSuggestions(relatedTaskInput.value));
     }
 
     // Export app data as JSON file
@@ -1412,7 +1738,7 @@
     // Import app data from JSON file
     function importDataFromFile(file) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         try {
           const imported = JSON.parse(e.target.result);
           if (imported && imported.groups && imported.channels && imported.workingTasks && imported.doneTasks) {
@@ -1455,13 +1781,13 @@
         helpModalContent.insertBefore(menuDiv, modalButtons);
       }
       document.getElementById('exportDataBtn').onclick = exportData;
-      document.getElementById('importDataInput').onchange = function(e) {
+      document.getElementById('importDataInput').onchange = function (e) {
         if (e.target.files && e.target.files[0]) {
           importDataFromFile(e.target.files[0]);
           e.target.value = '';
         }
       };
-      document.getElementById('deleteDataBtn').onclick = function() {
+      document.getElementById('deleteDataBtn').onclick = function () {
         if (confirm('Are you sure you want to delete ALL dashboard data? This cannot be undone.')) {
           localStorage.removeItem('ceoDashboardData');
           appData = { groups: [], channels: [], workingTasks: [], doneTasks: [] };
@@ -1476,7 +1802,7 @@
 
     // Patch openHelpModal to always add the menu
     const _openHelpModal = openHelpModal;
-    openHelpModal = function() {
+    openHelpModal = function () {
       helpModal.style.display = 'flex';
       addExportImportMenu();
     };
@@ -1596,7 +1922,7 @@
         updateChannelSearchResults('');
         channelSearchActive = true;
       }
-      
+
       // Open help with "q"
       if (e.key === 'q' && !channelSearchActive) {
         e.preventDefault();
@@ -1696,8 +2022,221 @@
       });
     }
 
+    // Gantt Chart Logic
+    let ganttZoom = 1; // 1: days, 2: weeks, etc.
+    let ganttOffset = 50; // pixels from "today"
+    let ganttIsPanning = false;
+    let ganttStartX = 0;
+    let ganttStartOffset = 0;
+
+    function switchView(view) {
+      const kanbanView = document.getElementById('kanbanView');
+      const ganttView = document.getElementById('ganttView');
+      const kanbanBtn = document.getElementById('kanbanViewBtn');
+      const ganttBtn = document.getElementById('ganttViewBtn');
+
+      if (view === 'kanban') {
+        kanbanView.style.display = 'block';
+        ganttView.style.display = 'none';
+        kanbanBtn.classList.add('active');
+        ganttBtn.classList.remove('active');
+      } else {
+        kanbanView.style.display = 'none';
+        ganttView.style.display = 'flex';
+        kanbanBtn.classList.remove('active');
+        ganttBtn.classList.add('active');
+        initGantt();
+        renderGantt();
+      }
+    }
+
+    function initGantt() {
+      const wrapper = document.getElementById('ganttTimelineWrapper');
+      if (wrapper.dataset.initialized) return;
+
+      wrapper.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.gantt-task-bar')) return;
+        ganttIsPanning = true;
+        ganttStartX = e.pageX;
+        ganttStartOffset = ganttOffset;
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (!ganttIsPanning) return;
+        const x = e.pageX;
+        const walk = x - ganttStartX;
+        ganttOffset = ganttStartOffset + walk;
+        renderGantt();
+      });
+      document.addEventListener('mouseup', () => {
+        ganttIsPanning = false;
+      });
+
+      // Sync scrolling
+      document.getElementById('ganttTimelineContent').onscroll = function (e) {
+        document.getElementById('ganttSidebarContent').scrollTop = e.target.scrollTop;
+      };
+
+      wrapper.dataset.initialized = "true";
+    }
+
+    function changeZoom(delta) {
+      ganttZoom += delta * 0.2;
+      if (ganttZoom < 0.2) ganttZoom = 0.2;
+      if (ganttZoom > 5) ganttZoom = 5;
+      renderGantt();
+    }
+
+    function jumpToToday() {
+      ganttOffset = 50;
+      renderGantt();
+    }
+
+    function jumpToDate(dateStr) {
+      const date = new Date(dateStr);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const diffDays = (date - today) / (1000 * 60 * 60 * 24);
+      const dayWidth = 40 * ganttZoom;
+      ganttOffset = 50 - diffDays * dayWidth;
+      renderGantt();
+    }
+
+    function renderGantt() {
+      const sidebarContent = document.getElementById('ganttSidebarContent');
+      const timelineHeader = document.getElementById('ganttTimelineHeader');
+      const lanesContainer = document.getElementById('ganttLanesContainer');
+      const gridLines = document.getElementById('ganttGridLines');
+      const dateRangeLabel = document.getElementById('ganttCurrentRange');
+
+      sidebarContent.innerHTML = '';
+      timelineHeader.innerHTML = '';
+      lanesContainer.innerHTML = '';
+
+      const dayWidth = 40 * ganttZoom;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Determine visible range
+      const wrapperWidth = document.getElementById('ganttTimelineWrapper').clientWidth || window.innerWidth - 320;
+      const startDayOffset = Math.floor(-ganttOffset / dayWidth) - 10;
+      const endDayOffset = startDayOffset + Math.ceil(wrapperWidth / dayWidth) + 30;
+
+      // Render header (dates/months)
+      let currentMonth = -1;
+      for (let i = startDayOffset; i <= endDayOffset; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+
+        const left = ganttOffset + i * dayWidth;
+
+        // Month label
+        if (d.getMonth() !== currentMonth) {
+          currentMonth = d.getMonth();
+          const monthLabel = document.createElement('div');
+          monthLabel.className = 'gantt-month-label';
+          monthLabel.style.left = left + 'px';
+          monthLabel.textContent = d.toLocaleDateString('default', { month: 'long', year: 'numeric' });
+          timelineHeader.appendChild(monthLabel);
+        }
+
+        // Day label
+        const dayLabel = document.createElement('div');
+        dayLabel.className = 'gantt-day-label';
+        if (i === 0) dayLabel.classList.add('today');
+        dayLabel.style.left = left + 'px';
+        dayLabel.style.width = dayWidth + 'px';
+        dayLabel.textContent = d.getDate();
+        timelineHeader.appendChild(dayLabel);
+      }
+
+      gridLines.style.backgroundImage = `linear-gradient(90deg, #f0f0f0 1px, transparent 1px)`;
+      gridLines.style.backgroundSize = `${dayWidth}px 100%`;
+      gridLines.style.transform = `translateX(${ganttOffset % dayWidth}px)`;
+
+      // Render lanes and tasks
+      appData.channels.forEach(channel => {
+        const label = document.createElement('div');
+        label.className = 'gantt-lane-label';
+        label.textContent = channel.name;
+        sidebarContent.appendChild(label);
+
+        const lane = document.createElement('div');
+        lane.className = 'gantt-lane';
+        lanesContainer.appendChild(lane);
+
+        channel.tasks.forEach(task => {
+          renderTaskBar(task, lane, today, dayWidth);
+        });
+      });
+
+      // Special lanes
+      if (appData.workingTasks.length > 0) {
+        const workingLabel = document.createElement('div');
+        workingLabel.className = 'gantt-lane-label';
+        workingLabel.style.fontWeight = 'bold';
+        workingLabel.style.background = '#f0f7ff';
+        workingLabel.textContent = 'WORKING';
+        sidebarContent.appendChild(workingLabel);
+        const workingLane = document.createElement('div');
+        workingLane.className = 'gantt-lane';
+        workingLane.style.background = '#f0f7ff';
+        lanesContainer.appendChild(workingLane);
+        appData.workingTasks.forEach(task => renderTaskBar(task, workingLane, today, dayWidth));
+      }
+
+      if (appData.doneTasks.length > 0) {
+        const doneLabel = document.createElement('div');
+        doneLabel.className = 'gantt-lane-label';
+        doneLabel.style.fontWeight = 'bold';
+        doneLabel.style.background = '#f6fff8';
+        doneLabel.textContent = 'DONE';
+        sidebarContent.appendChild(doneLabel);
+        const doneLane = document.createElement('div');
+        doneLane.className = 'gantt-lane';
+        doneLane.style.background = '#f6fff8';
+        lanesContainer.appendChild(doneLane);
+        appData.doneTasks.forEach(task => renderTaskBar(task, doneLane, today, dayWidth));
+      }
+
+      // Update center date label
+      const centerDate = new Date(today);
+      centerDate.setDate(today.getDate() + Math.floor((wrapperWidth / 2 - ganttOffset) / dayWidth));
+      dateRangeLabel.textContent = centerDate.toLocaleDateString('default', { month: 'long', year: 'numeric' });
+    }
+
+    function renderTaskBar(task, lane, today, dayWidth) {
+      const start = task.workingStartTime || task.createdAt || Date.now();
+      const end = task.completedAt || task.dueDate || (start + 86400000);
+
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+
+      const startDiff = (startDate - today) / (1000 * 60 * 60 * 24);
+      const endDiff = (endDate - today) / (1000 * 60 * 60 * 24);
+
+      const left = ganttOffset + startDiff * dayWidth;
+      const width = Math.max((endDiff - startDiff) * dayWidth, 30);
+
+      const bar = document.createElement('div');
+      bar.className = 'gantt-task-bar';
+      bar.style.left = left + 'px';
+      bar.style.width = width + 'px';
+      bar.innerHTML = formatTaskContent(task.content);
+      bar.title = `${new Date(start).toLocaleDateString()} - ${new Date(end).toLocaleDateString()}`;
+      bar.onclick = () => openTaskDetailModal(task.id);
+
+      lane.appendChild(bar);
+    }
+
     // Update channels when group filter changes
-    groupFilterSelect.addEventListener('change', renderChannels);
+    groupFilterSelect.addEventListener('change', () => {
+      renderChannels();
+      if (document.getElementById('ganttView').style.display === 'flex') {
+        renderGantt();
+      }
+    });
+
   </script>
 </body>
+
 </html>
