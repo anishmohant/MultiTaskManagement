@@ -917,9 +917,10 @@
           <label>Created</label>
           <p id="taskDetailCreatedAt"></p>
         </div>
-        <div class="detail-item" id="dueDateContainer">
-          <label>Due</label>
-          <p id="taskDetailDueDate"></p>
+        <div class="detail-item">
+          <label for="taskDetailDueDateInput">Due Date</label>
+          <input type="datetime-local" id="taskDetailDueDateInput"
+            style="width: 100%; border: none; background: transparent; font-size: 14px; font-weight: bold; font-family: inherit; color: inherit; padding: 0; outline: none;" />
         </div>
         <div class="detail-item" id="workingSinceContainer">
           <label>Working since</label>
@@ -1014,12 +1015,10 @@
       document.getElementById('taskDetailGroup').textContent = taskData.groupName;
 
       const createdAt = document.getElementById('taskDetailCreatedAt');
-      const dueDate = document.getElementById('taskDetailDueDate');
       const workingSince = document.getElementById('taskDetailWorkingSince');
       const completedAt = document.getElementById('taskDetailCompletedAt');
 
       const createdAtContainer = document.getElementById('createdAtContainer');
-      const dueDateContainer = document.getElementById('dueDateContainer');
       const workingSinceContainer = document.getElementById('workingSinceContainer');
       const completedAtContainer = document.getElementById('completedAtContainer');
 
@@ -1030,11 +1029,15 @@
         createdAtContainer.style.display = 'none';
       }
 
+      const dueDateInput = document.getElementById('taskDetailDueDateInput');
       if (task.dueDate) {
-        dueDate.textContent = new Date(task.dueDate).toLocaleString();
-        dueDateContainer.style.display = 'block';
+        // Convert to format required by datetime-local: YYYY-MM-DDThh:mm
+        const date = new Date(task.dueDate);
+        const tzOffset = date.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(date - tzOffset)).toISOString().slice(0, 16);
+        dueDateInput.value = localISOTime;
       } else {
-        dueDateContainer.style.display = 'none';
+        dueDateInput.value = '';
       }
 
       if (task.workingStartTime) {
@@ -1064,8 +1067,19 @@
     function saveTaskDetail() {
       if (!currentEditingTask) return;
       const newContent = document.getElementById('taskDetailContent').innerHTML;
+      const newDueDate = document.getElementById('taskDetailDueDateInput').value;
+
       currentEditingTask.task.content = newContent;
+      if (newDueDate) {
+        currentEditingTask.task.dueDate = new Date(newDueDate).getTime();
+      } else {
+        delete currentEditingTask.task.dueDate;
+      }
+
       saveData();
+      if (document.getElementById('ganttView').style.display === 'flex') {
+        renderGantt();
+      }
       renderChannels();
       renderWorkingTasks();
       renderDoneTasks();
