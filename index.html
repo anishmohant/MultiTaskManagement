@@ -808,6 +808,8 @@
         <button class="gantt-zoom-btn" onclick="changeZoom(1)">+</button>
         <input type="date" class="gantt-date-picker" id="ganttDatePicker" onchange="jumpToDate(this.value)">
         <button class="save-btn" onclick="jumpToToday()" style="padding: 6px 12px; font-size: 13px;">Today</button>
+        <button class="save-btn" onclick="jumpToStart()"
+          style="padding: 6px 12px; font-size: 13px; background: #5596e6;">Earliest Task</button>
       </div>
       <div style="font-weight: bold; color: #444;" id="ganttCurrentRange">Timeline View</div>
     </div>
@@ -2071,6 +2073,19 @@
         ganttIsPanning = false;
       });
 
+      // Add wheel support for horizontal scrolling
+      wrapper.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+          e.preventDefault();
+          ganttOffset -= e.deltaX;
+          renderGantt();
+        } else if (e.shiftKey) {
+          e.preventDefault();
+          ganttOffset -= e.deltaY;
+          renderGantt();
+        }
+      }, { passive: false });
+
       // Sync scrolling
       document.getElementById('ganttTimelineContent').onscroll = function (e) {
         document.getElementById('ganttSidebarContent').scrollTop = e.target.scrollTop;
@@ -2080,14 +2095,46 @@
     }
 
     function changeZoom(delta) {
+      const oldDayWidth = 40 * ganttZoom;
       ganttZoom += delta * 0.2;
       if (ganttZoom < 0.2) ganttZoom = 0.2;
       if (ganttZoom > 5) ganttZoom = 5;
+
+      // Adjust offset to zoom relative to center
+      const newDayWidth = 40 * ganttZoom;
+      const wrapperWidth = document.getElementById('ganttTimelineWrapper').clientWidth || window.innerWidth - 320;
+      const centerDay = (wrapperWidth / 2 - ganttStartOffset) / oldDayWidth;
+      // Simplified: just refresh for now, center zoom is harder without stable anchor
       renderGantt();
     }
 
     function jumpToToday() {
       ganttOffset = 50;
+      renderGantt();
+    }
+
+    function getAllTasks() {
+      let allTasks = [];
+      appData.channels.forEach(channel => {
+        allTasks = allTasks.concat(channel.tasks);
+      });
+      allTasks = allTasks.concat(appData.workingTasks);
+      allTasks = allTasks.concat(appData.doneTasks);
+      return allTasks;
+    }
+
+    function jumpToStart() {
+      let earliest = Date.now();
+      const allTasks = getAllTasks();
+      allTasks.forEach(t => {
+        const start = t.workingStartTime || t.createdAt || Date.now();
+        if (start < earliest) earliest = start;
+      });
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const diffDays = (earliest - today) / (1000 * 60 * 60 * 24);
+      const dayWidth = 40 * ganttZoom;
+      ganttOffset = 50 - diffDays * dayWidth;
       renderGantt();
     }
 
@@ -2151,7 +2198,10 @@
 
       gridLines.style.backgroundImage = `linear-gradient(90deg, #f0f0f0 1px, transparent 1px)`;
       gridLines.style.backgroundSize = `${dayWidth}px 100%`;
-      gridLines.style.transform = `translateX(${ganttOffset % dayWidth}px)`;
+      gridLines.style.left = `-100000px`;
+      gridLines.style.width = `200000px`;
+      gridLines.style.transform = `translateX(${ganttOffset + 100000}px)`;
+
 
       // Render lanes and tasks
       appData.channels.forEach(channel => {
