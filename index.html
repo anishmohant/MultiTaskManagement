@@ -2979,7 +2979,7 @@
         wrapper.innerHTML = `
           <label class="project-label">${label}</label>
           <div class="locked-field-container">
-             <input type="text" class="project-value locked-field-input" id="field_${safeKey}" value="${escapeHtml(value)}" placeholder="${placeholder}" readonly>
+             <input type="text" class="project-value locked-field-input" id="field_${safeKey}" value="${escapeHtml(value)}" placeholder="${placeholder}" readonly autocomplete="off">
              <div class="copied-overlay" id="overlay_${safeKey}">COPIED!</div>
              <button class="field-lock-btn" id="btn_${safeKey}" title="Click to Edit">🔒</button>
           </div>
@@ -3128,10 +3128,14 @@
          renderGantt();
        }
        projectDetailsModal.style.display = 'none';
+       currentViewingGroupId = null; 
+       tempFieldForVerification = null;
     });
 
     document.getElementById('closeProjectBtn').addEventListener('click', () => {
        projectDetailsModal.style.display = 'none';
+       currentViewingGroupId = null;
+       tempFieldForVerification = null;
     });
 
     // Initialize button state on load
