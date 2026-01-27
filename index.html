@@ -281,6 +281,189 @@
       border: 1.5px solid #7fb3ff;
     }
 
+    /* Project Details Modal Styles */
+    #projectDetailsModal .modal-content {
+      width: 98%;
+      max-width: 98vw;
+      height: 95vh;
+      max-height: none;
+      display: flex;
+      flex-direction: column;
+      background: #fdfdfd;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .project-header-bg {
+      padding: 20px 25px;
+      background: linear-gradient(135deg, #f0f4ff, #e6eeff);
+      border-bottom: 1px solid #dceeff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .project-title-input {
+      font-size: 24px;
+      font-weight: 800;
+      border: none;
+      background: transparent;
+      width: 100%;
+      color: #2c3e50;
+      outline: none;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 20px;
+      padding: 25px;
+      overflow-y: auto;
+      flex-grow: 1;
+      height: 100%;
+    }
+
+    .project-sidebar {
+      grid-row: 1 / span 2;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .project-main {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+
+    .project-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #eef2f5;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-card.dense {
+      gap: 10px;
+    }
+
+    .project-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #8899a6;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .project-value {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #334455;
+      background: #f8fafc;
+      transition: all 0.2s;
+    }
+
+    .project-value:focus {
+      background: white;
+      border-color: #7fb3ff;
+      box-shadow: 0 0 0 3px rgba(127, 179, 255, 0.1);
+      outline: none;
+    }
+    
+    .project-value-textarea {
+       min-height: 120px;
+       resize: vertical;
+       line-height: 1.5;
+    }
+
+    .status-badge-select {
+       appearance: none;
+       background-color: #e0e7ff;
+       color: #4338ca;
+       border-radius: 20px;
+       padding: 4px 12px;
+       font-size: 12px;
+       font-weight: 700;
+       border: none;
+       cursor: pointer;
+       text-align: center;
+    }
+
+    .modules-grid {
+       display: grid;
+       grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+       gap: 15px;
+    }
+
+    /* Locked Field Styles */
+    .locked-field-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .locked-field-input {
+      flex-grow: 1;
+      padding-right: 30px; /* Space for lock icon */
+      background-color: #f0f0f0; /* Default locked bg */
+      cursor: not-allowed;
+    }
+    .locked-field-input:not(:disabled) {
+      background-color: white;
+      cursor: text;
+      border-color: #7fb3ff;
+      box-shadow: 0 0 0 2px rgba(127,179,255,0.2);
+    }
+    .field-lock-btn {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: #777;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+    .field-lock-btn:hover {
+      color: #333;
+    }
+    .field-lock-btn.unlocked {
+      color: #e67e22; /* Warning color for unlock/save */
+    }
+
+    /* Confirmation Modal Specifics */
+    #confirmModal {
+       z-index: 2000;
+    }
+    #confirmModal .modal-content {
+      max-width: 400px;
+      border-left: 5px solid #ff9800; /* Orange warning accent */
+    }
+    .warning-text {
+      color: #d35400;
+      background: #fdf2e9;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-size: 13px;
+    }
+
     /* Task Detail Styles */
     .task-details-grid {
       display: grid;
@@ -794,10 +977,92 @@
     <!-- Add Group Button and Group Filter Select -->
     <div class="group-controls">
       <button class="add-group-btn" id="helpBtn">?</button>
+      <button class="add-group-btn" id="projectDetailsBtn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Select a group to view details">▤</button>
       <button class="add-group-btn" id="addGroupBtn">+</button>
       <select id="groupFilterSelect" class="group-select">
         <!-- Options will be populated by JS -->
       </select>
+    </div>
+  </div>
+
+  <!-- Project Details Modal -->
+  <div class="modal" id="projectDetailsModal">
+    <div class="modal-content">
+      <div class="project-header-bg">
+        <div style="flex-grow: 1;">
+           <label class="project-label">PROJECT NAME</label>
+           <input type="text" id="projName" class="project-title-input" placeholder="Project Name">
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <input type="color" id="projColor" style="border:none; width:40px; height:40px; cursor:pointer;" title="Project Color">
+            <button class="save-btn" id="saveProjectBtn" style="height:40px; padding: 0 20px;">Save Changes</button>
+            <button class="cancel-btn" id="closeProjectBtn" style="height:40px;">&times;</button>
+        </div>
+      </div>
+      
+      
+      <div class="project-grid">
+         <!-- Sidebar Logic (Metadata) -->
+         <div class="project-sidebar">
+            <div class="project-card dense">
+               <label class="project-label">STATUS</label>
+               <select id="projStatus" class="project-value">
+                  <option value="Planning">Planning</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="On Hold">On Hold</option>
+                  <option value="Completed">Completed</option>
+               </select>
+
+               <label class="project-label" style="margin-top:5px;">PRIORITY</label>
+               <select id="projPriority" class="project-value">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Critical">Critical</option>
+               </select>
+            </div>
+
+            <div class="project-card dense">
+                <label class="project-label">TIMELINE</label>
+                <div style="display:grid; grid-template-columns: 1fr; gap:8px;">
+                   <div>
+                      <span style="font-size:10px; color:#aaa;">START</span>
+                      <input type="date" id="projStartDate" class="project-value">
+                   </div>
+                   <div>
+                      <span style="font-size:10px; color:#aaa;">TARGET</span>
+                      <input type="date" id="projTargetDate" class="project-value">
+                   </div>
+                </div>
+            </div>
+
+            <div class="project-card dense">
+                <label class="project-label">OWNER / LEAD</label>
+                <input type="text" id="projOwner" class="project-value" placeholder="Unassigned">
+                
+                <label class="project-label" style="margin-top:10px;">BUDGET</label>
+                <input type="text" id="projBudget" class="project-value" placeholder="$0.00">
+            </div>
+         </div>
+
+         <!-- Main Content: Dynamic Fields -->
+         <div class="project-main" id="projectDynamicFieldsContainer" style="overflow-y:visible;">
+            <!-- Fields rendered by JS -->
+         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-content">
+      <h3 style="margin-top:0;">Confirm Update</h3>
+      <p style="font-size:14px; margin-bottom:5px;">You are about to update the <b id="confirmFieldName">Field</b>.</p>
+      <div class="warning-text">This may affect team access. Are you sure?</div>
+      <div class="modal-buttons">
+         <button class="cancel-btn" id="confirmCancelBtn">Cancel</button>
+         <button class="save-btn" id="confirmProceedBtn" style="background-color:#e67e22;">Confirm & Save</button>
+      </div>
     </div>
   </div>
 
@@ -1844,7 +2109,17 @@
       initHelpModal();
       initTaskDetailModal();
       const helpBtn = document.getElementById('helpBtn');
+      const projectDetailsBtn = document.getElementById('projectDetailsBtn');
+
       helpBtn.addEventListener('click', openHelpModal);
+      
+      projectDetailsBtn.addEventListener('click', () => {
+        const groupId = groupFilterSelect.value;
+        if (groupId && groupId !== 'all') {
+          openProjectDetails(groupId);
+        }
+      });
+
       addGroupBtn.addEventListener('click', openGroupModal);
       addChannelBtn.addEventListener('click', openChannelModal);
       makeDraggable(document.getElementById('workingBox'));
@@ -2306,7 +2581,303 @@
       if (document.getElementById('ganttView').style.display === 'flex') {
         renderGantt();
       }
+      updateProjectDetailsBtnState();
     });
+
+    const projectDetailsBtn = document.getElementById('projectDetailsBtn');
+    const projectDetailsModal = document.getElementById('projectDetailsModal');
+    let currentViewingGroupId = null;
+
+    function updateProjectDetailsBtnState() {
+       const val = groupFilterSelect.value;
+       if (val && val !== 'all') {
+          projectDetailsBtn.disabled = false;
+          projectDetailsBtn.style.opacity = '1';
+          projectDetailsBtn.style.cursor = 'pointer';
+       } else {
+          projectDetailsBtn.disabled = true;
+          projectDetailsBtn.style.opacity = '0.5';
+          projectDetailsBtn.style.cursor = 'not-allowed';
+       }
+    }
+
+
+
+
+
+    // -------------------------------------------------------------
+    // Dynamic Fields Logic
+    // -------------------------------------------------------------
+    
+    // Schema Definition
+    const PROJECT_FIELD_SCHEMA = [
+      {
+         category: "Global Project Essentials (The 'Big Four')",
+         description: "The links everyone asks for every single day.",
+         fields: [
+            { label: "Jira Board / Epic Link", id: "jira", type: "text", placeholder: "https://jira..." },
+            { label: "Main Documentation (Confluence/Notion)", id: "docs", type: "text", placeholder: "https://..." },
+            { label: "Product Requirement Document (PRD)", id: "prd", type: "text", placeholder: "https://..." },
+            { label: "Design File (Figma/Adobe XD)", id: "design", type: "text", placeholder: "https://..." }
+         ]
+      },
+      {
+         category: "Technical Core",
+         description: "The 'under the hood' links for the dev team.",
+         fields: [
+            { label: "Primary Repository", id: "repo", type: "text", placeholder: "GitHub/GitLab/Bitbucket URL" },
+            { label: "API Documentation", id: "apiDocs", type: "text", placeholder: "Swagger/Postman URL" },
+            { label: "Architecture Diagram", id: "archDiagram", type: "text", placeholder: "LucidChart/Miro URL" },
+            { label: "ER Diagram (DB Schema)", id: "erDiagram", type: "text", placeholder: "Schema URL" }
+         ]
+      },
+      // Environment Fields (Will be generated x3)
+      {
+         category: "Environments",
+         isEnvGroup: true,
+         envs: ["DEV", "QC/Staging", "PROD"],
+         fieldsTemplate: [
+            { label: "Application URL", id: "appUrl" },
+            { label: "API Base URL", id: "apiUrl" },
+            { label: "Database Console", id: "dbConsole" },
+            { label: "Deployment Pipeline", id: "pipeline" },
+            { label: "Logs & Monitoring", id: "logs" },
+            { label: "Error Tracking", id: "sentry" },
+            { label: "Branch Name", id: "branch" }
+         ]
+      },
+      {
+         category: "Communication & Support",
+         description: "For contacts and syncing.",
+         fields: [
+            { label: "Slack/Teams Channel", id: "chat", type: "text", placeholder: "Chat Link" },
+            { label: "On-Call Schedule", id: "onCall", type: "text", placeholder: "PagerDuty/Opsgenie" },
+            { label: "Meeting Notes Folder", id: "meetingNotes", type: "text", placeholder: "Folder URL" },
+            { label: "Stakeholder Directory", id: "stakeholders", type: "text", placeholder: "Directory URL" }
+         ]
+      },
+      {
+         category: "Compliance & Security",
+         description: "Audit and security checks.",
+         fields: [
+            { label: "Security Scan Reports", id: "security", type: "text", placeholder: "SonarQube/Snyk" },
+            { label: "Compliance Docs", id: "compliance", type: "text", placeholder: "SOC2/GDPR" },
+            { label: "Third-Party Licenses", id: "licenses", type: "text", placeholder: "License Tracking" }
+         ]
+      }
+    ];
+
+    let tempFieldForVerification = null; // { group, fieldKey, value, inputEl, btnEl }
+
+    function openProjectDetails(groupId) {
+       currentViewingGroupId = groupId;
+       const group = appData.groups.find(g => g.id === groupId);
+       if (!group) return;
+
+       // Populate Top Metadata (Sidebar)
+       document.getElementById('projName').value = group.name || '';
+       document.getElementById('projColor').value = group.color || '#cccccc';
+       document.getElementById('projStatus').value = group.status || 'Planning';
+       document.getElementById('projPriority').value = group.priority || 'Medium';
+       document.getElementById('projStartDate').value = group.startDate || '';
+       document.getElementById('projTargetDate').value = group.targetDate || '';
+       document.getElementById('projOwner').value = group.owner || '';
+       document.getElementById('projBudget').value = group.budget || '';
+
+       // Ensure 'extendedFields' object exists
+       if (!group.extendedFields) group.extendedFields = {};
+
+       // Render Dynamic Fields
+       renderDynamicProjectFields(group);
+
+       projectDetailsModal.style.display = 'flex';
+    }
+
+    function renderDynamicProjectFields(group) {
+        const container = document.getElementById('projectDynamicFieldsContainer');
+        container.innerHTML = '';
+
+        PROJECT_FIELD_SCHEMA.forEach(section => {
+            if (section.isEnvGroup) {
+                // Render Env Sections
+                section.envs.forEach(env => {
+                    const card = createSectionCard(`${env} Environment`, `${env} specific configurations.`);
+                    const grid = document.createElement('div');
+                    grid.className = 'modules-grid'; // Use grid for density pairs
+                    
+                    section.fieldsTemplate.forEach(f => {
+                       const fieldKey = `${env}_${f.id}`; // e.g. DEV_appUrl
+                       const val = group.extendedFields[fieldKey] || '';
+                       const fieldHtml = createLockedField(f.label, fieldKey, val, f.placeholder || "URL/Text...");
+                       grid.appendChild(fieldHtml);
+                    });
+                    card.appendChild(grid);
+                    container.appendChild(card);
+                });
+            } else {
+                // Render Normal Section
+                const card = createSectionCard(section.category, section.description);
+                const grid = document.createElement('div');
+                grid.className = 'modules-grid';
+                
+                section.fields.forEach(f => {
+                   const fieldKey = f.id;
+                   const val = group.extendedFields[fieldKey] || '';
+                   const fieldHtml = createLockedField(f.label, fieldKey, val, f.placeholder);
+                   grid.appendChild(fieldHtml);
+                });
+                card.appendChild(grid);
+                container.appendChild(card);
+            }
+        });
+    }
+
+    function createSectionCard(title, desc) {
+        const div = document.createElement('div');
+        div.className = 'project-card';
+        div.innerHTML = `
+           <h4 style="margin:0 0 5px 0; color:#2c3e50; font-size:15px; border-bottom:1px solid #f0f0f0; padding-bottom:5px;">${title}</h4>
+           <p style="margin:0 0 15px 0; font-size:12px; color:#888;">${desc || ''}</p>
+        `;
+        return div;
+    }
+
+    function createLockedField(label, key, value, placeholder) {
+        // Returns a DOM element wrapper
+        // Sanitize key for use in DOM IDs (replace non-safe chars with underscore)
+        const safeKey = key.replace(/[^a-zA-Z0-9-_]/g, '_');
+        
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+          <label class="project-label">${label}</label>
+          <div class="locked-field-container">
+             <input type="text" class="project-value locked-field-input" id="field_${safeKey}" value="${escapeHtml(value)}" placeholder="${placeholder}" disabled>
+             <button class="field-lock-btn" id="btn_${safeKey}" title="Click to Edit">🔒</button>
+          </div>
+        `;
+        
+        // Add event listener to lock button
+        const btn = wrapper.querySelector(`#btn_${safeKey}`);
+        const input = wrapper.querySelector(`#field_${safeKey}`);
+        
+        btn.onclick = () => handleLockClick(key, input, btn);
+
+        return wrapper;
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/&/g, "&amp;")
+                   .replace(/</g, "&lt;")
+                   .replace(/>/g, "&gt;")
+                   .replace(/"/g, "&quot;")
+                   .replace(/'/g, "&#039;");
+    }
+
+    // Logic for Lock/Unlock flow
+    function handleLockClick(key, input, btn) {
+        const isLocked = input.disabled;
+        
+        if (isLocked) {
+            // Unlock Action
+            input.disabled = false;
+            input.focus();
+            btn.innerHTML = '💾'; // Save icon
+            btn.title = "Save & Lock";
+            btn.classList.add('unlocked');
+        } else {
+            // Save Action -> Confirm Modal
+            const currentGroup = appData.groups.find(g => g.id === currentViewingGroupId);
+            const newValue = input.value;
+            const oldValue = currentGroup.extendedFields[key] || '';
+
+            if (newValue === oldValue) {
+                // No change, just lock back silently
+                lockFieldBack(input, btn);
+                return;
+            }
+
+            // Trigger Confirmation
+            tempFieldForVerification = {
+                group: currentGroup,
+                fieldKey: key,
+                newValue: newValue,
+                inputEl: input,
+                btnEl: btn,
+                label: input.parentElement.previousElementSibling.textContent // Label text
+            };
+            
+            openConfirmModal(tempFieldForVerification.label);
+        }
+    }
+
+    function lockFieldBack(input, btn) {
+        input.disabled = true;
+        btn.innerHTML = '🔒';
+        btn.title = "Click to Edit";
+        btn.classList.remove('unlocked');
+    }
+
+    // Confirm Modal Logic
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmProceedBtn = document.getElementById('confirmProceedBtn');
+    const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+
+    function openConfirmModal(fieldName) {
+        document.getElementById('confirmFieldName').textContent = fieldName;
+        confirmModal.style.display = 'flex';
+    }
+
+    confirmCancelBtn.onclick = () => {
+        confirmModal.style.display = 'none';
+        // Do not revert text for now, just keep it unlocked so user can fix or cancel manually?
+        // Or revert? Usually cancel means "I didn't mean to save yet" or "I changed my mind".
+        // Let's just close modal and leave it unlocked.
+    };
+
+    confirmProceedBtn.onclick = () => {
+        if (tempFieldForVerification) {
+            const { group, fieldKey, newValue, inputEl, btnEl } = tempFieldForVerification;
+            
+            // Commit
+            group.extendedFields[fieldKey] = newValue;
+            saveData(); // Persist to LocalStorage
+            
+            // Relock
+            lockFieldBack(inputEl, btnEl);
+        }
+        confirmModal.style.display = 'none';
+        tempFieldForVerification = null;
+    };
+
+    document.getElementById('saveProjectBtn').addEventListener('click', () => {
+       if (!currentViewingGroupId) return;
+       const group = appData.groups.find(g => g.id === currentViewingGroupId);
+       if (!group) return;
+
+       // Save Metadata Fields only (the dynamic ones are saved individually)
+       group.name = document.getElementById('projName').value;
+       group.color = document.getElementById('projColor').value;
+       group.status = document.getElementById('projStatus').value;
+       group.priority = document.getElementById('projPriority').value;
+       group.startDate = document.getElementById('projStartDate').value;
+       group.targetDate = document.getElementById('projTargetDate').value;
+       group.owner = document.getElementById('projOwner').value;
+       group.budget = document.getElementById('projBudget').value;
+
+       saveData();
+       renderGroupFilterOptions(); 
+       groupFilterSelect.value = currentViewingGroupId; 
+       renderChannels(); 
+       if (document.getElementById('ganttView').style.display === 'flex') {
+         renderGantt();
+       }
+       projectDetailsModal.style.display = 'none';
+    });
+
+    // Initialize button state on load
+    updateProjectDetailsBtnState();
+
 
   </script>
 </body>
