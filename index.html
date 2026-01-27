@@ -1686,6 +1686,8 @@
     function openChannelModal() {
       const channelNameInput = document.getElementById('channelName');
       const channelGroupSelect = document.getElementById('channelGroup');
+      const currentGroupFilter = groupFilterSelect.value;
+
       channelNameInput.value = '';
       channelGroupSelect.innerHTML = '';
       appData.groups.forEach(group => {
@@ -1694,6 +1696,12 @@
         option.textContent = group.name;
         channelGroupSelect.appendChild(option);
       });
+      
+      // If a specific group is selected in the filter, select it in the modal default
+      if (currentGroupFilter && currentGroupFilter !== 'all') {
+        channelGroupSelect.value = currentGroupFilter;
+      }
+      
       channelModal.style.display = 'flex';
     }
     function closeChannelModal() {
