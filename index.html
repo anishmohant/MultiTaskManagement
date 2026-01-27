@@ -401,8 +401,12 @@
 
     .modules-grid {
        display: grid;
-       grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+       grid-template-columns: 1fr;
        gap: 15px;
+    }
+
+    .project-card.full-width .modules-grid {
+       grid-template-columns: repeat(2, 1fr);
     }
 
     /* Locked Field Styles */
@@ -943,6 +947,49 @@
       border-radius: 8px;
       font-size: 13px;
       outline: none;
+    }
+
+    /* Environment Switch Styles */
+    .env-switch-container {
+      display: flex;
+      background: #f0f2f5;
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .env-switch-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .env-switch-btn.active {
+      background: white;
+      color: #7fb3ff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .project-card.full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .subgroup-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7fb3ff;
+      margin: 20px 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .subgroup-header:first-of-type {
+      margin-top: 5px;
     }
   </style>
 </head>
@@ -2625,7 +2672,8 @@
          category: "Technical Core",
          description: "The 'under the hood' links for the dev team.",
          fields: [
-            { label: "Primary Repository", id: "repo", type: "text", placeholder: "GitHub/GitLab/Bitbucket URL" },
+            { label: "Front End Repository", id: "repo_fe", type: "text", placeholder: "GitHub/GitLab URL" },
+            { label: "Back End Repository", id: "repo_be", type: "text", placeholder: "GitHub/GitLab URL" },
             { label: "API Documentation", id: "apiDocs", type: "text", placeholder: "Swagger/Postman URL" },
             { label: "Architecture Diagram", id: "archDiagram", type: "text", placeholder: "LucidChart/Miro URL" },
             { label: "ER Diagram (DB Schema)", id: "erDiagram", type: "text", placeholder: "Schema URL" }
@@ -2637,13 +2685,41 @@
          isEnvGroup: true,
          envs: ["DEV", "QC/Staging", "PROD"],
          fieldsTemplate: [
-            { label: "Application URL", id: "appUrl" },
-            { label: "API Base URL", id: "apiUrl" },
-            { label: "Database Console", id: "dbConsole" },
-            { label: "Deployment Pipeline", id: "pipeline" },
-            { label: "Logs & Monitoring", id: "logs" },
-            { label: "Error Tracking", id: "sentry" },
-            { label: "Branch Name", id: "branch" }
+            // Application Access
+            { label: "Application URL", id: "appUrl", subGroup: "Application Access & Domain" },
+            { label: "Exposed / Public URL", id: "exposedUrl", subGroup: "Application Access & Domain" },
+            { label: "Domain / DNS Details", id: "domain", subGroup: "Application Access & Domain" },
+            { label: "API Base URL", id: "apiUrl", subGroup: "Application Access & Domain" },
+            
+            // App Service & Compute
+            { label: "App Service / ECS", id: "appService", subGroup: "App Service & Compute" },
+            { label: "AWS Instance Name", id: "awsName", subGroup: "App Service & Compute" },
+            { label: "AWS Instance ID", id: "awsId", subGroup: "App Service & Compute" },
+            
+            // Server Configuration
+            { label: "Server Configuration Path", id: "configPath", subGroup: "Server Configuration" },
+            { label: "Nginx Config Location", id: "nginxConfig", subGroup: "Server Configuration" },
+            { label: "Security Group / Firewall", id: "secGroup", subGroup: "Server Configuration" },
+            { label: "RAM / CPU Specs", id: "ramSpecs", subGroup: "Server Configuration" },
+            { label: "Database Console", id: "dbConsole", subGroup: "Server Configuration" },
+
+            // Logs & CI/CD
+            { label: "Deployment Pipeline (CI/CD)", id: "pipeline", subGroup: "Logs & CI/CD" },
+            { label: "Branch Name", id: "branch", subGroup: "Logs & CI/CD" },
+            { label: "Logs & Monitoring Dashboard", id: "logs", subGroup: "Logs & CI/CD" },
+            { label: "Error Tracking (Sentry)", id: "sentry", subGroup: "Logs & CI/CD" }
+         ]
+      },
+      {
+         category: "Associated Accounts",
+         description: "External service accounts and credential pointers.",
+         isAccountGroup: true,
+         accountCount: 5,
+         fieldsTemplate: [
+            { label: "Identifier / Login URL", id: "id", placeholder: "Service Name & Login URL" },
+            { label: "Credential 1", id: "cred1", placeholder: "Vault Path / LastPass Folder" },
+            { label: "Credential 2", id: "cred2", placeholder: "Optional info" },
+            { label: "Credential 3", id: "cred3", placeholder: "Optional info" }
          ]
       },
       {
@@ -2699,21 +2775,155 @@
 
         PROJECT_FIELD_SCHEMA.forEach(section => {
             if (section.isEnvGroup) {
-                // Render Env Sections
-                section.envs.forEach(env => {
-                    const card = createSectionCard(`${env} Environment`, `${env} specific configurations.`);
-                    const grid = document.createElement('div');
-                    grid.className = 'modules-grid'; // Use grid for density pairs
-                    
-                    section.fieldsTemplate.forEach(f => {
-                       const fieldKey = `${env}_${f.id}`; // e.g. DEV_appUrl
-                       const val = group.extendedFields[fieldKey] || '';
-                       const fieldHtml = createLockedField(f.label, fieldKey, val, f.placeholder || "URL/Text...");
-                       grid.appendChild(fieldHtml);
-                    });
-                    card.appendChild(grid);
-                    container.appendChild(card);
-                });
+                 // Create single container card with switch
+                 const card = document.createElement('div');
+                 card.className = 'project-card full-width'; // Added full-width class
+                 
+                 // Create header with switch
+                 const header = document.createElement('div');
+                 header.style.cssText = "display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f0f0f0; padding-bottom:10px; margin-bottom:15px;";
+                 
+                 const titleBox = document.createElement('div');
+                 const title = document.createElement('h4');
+                 title.style.margin = '0 0 2px 0';
+                 title.style.color = '#2c3e50';
+                 title.style.fontSize = '15px';
+                 title.textContent = "Deployments";
+                 const sub = document.createElement('span');
+                 sub.style.fontSize = '11px';
+                 sub.style.color='#999';
+                 sub.textContent = "Manage environment links (Full Stack)";
+                 titleBox.appendChild(title);
+                 titleBox.appendChild(sub);
+                 
+                 const switchContainer = document.createElement('div');
+                 switchContainer.className = 'env-switch-container';
+                 
+                 // Generate switch buttons
+                 section.envs.forEach((env, idx) => {
+                     const btn = document.createElement('button');
+                     btn.className = `env-switch-btn ${idx === 0 ? 'active' : ''}`;
+                     btn.textContent = env;
+                     btn.onclick = () => {
+                         // Switch logic
+                         card.querySelectorAll('.env-switch-btn').forEach(b => b.classList.remove('active'));
+                         btn.classList.add('active');
+                         card.querySelectorAll('.env-content-pane').forEach(p => p.style.display = 'none');
+                         // Use safe ID for pane
+                         const safeEnvId = env.replace(/[^a-zA-Z0-9]/g, '');
+                         const pane = card.querySelector(`#env_pane_${safeEnvId}`);
+                         if(pane) pane.style.display = 'block';
+                     };
+                     switchContainer.appendChild(btn);
+                 });
+                 
+                 header.appendChild(titleBox);
+                 header.appendChild(switchContainer);
+                 card.appendChild(header);
+                 
+                 // Content panes
+                 section.envs.forEach((env, idx) => {
+                     const paneContainer = document.createElement('div');
+                     paneContainer.className = 'env-content-pane';
+                     const safeEnvId = env.replace(/[^a-zA-Z0-9]/g, '');
+                     paneContainer.id = `env_pane_${safeEnvId}`;
+                     paneContainer.style.display = idx === 0 ? 'block' : 'none'; // Show first by default
+                     
+                     // Group fields by subGroup
+                     const groups = {};
+                     section.fieldsTemplate.forEach(f => {
+                       const gName = f.subGroup || "Other";
+                       if (!groups[gName]) groups[gName] = [];
+                       groups[gName].push(f);
+                     });
+
+                     // Render subgroups
+                     for (const [groupName, fields] of Object.entries(groups)) {
+                        const subHeader = document.createElement('div');
+                        subHeader.className = 'subgroup-header';
+                        subHeader.textContent = groupName;
+                        paneContainer.appendChild(subHeader);
+
+                        const grid = document.createElement('div');
+                        grid.className = 'modules-grid';
+                        
+                        fields.forEach(f => {
+                             const fieldKey = `${env}_${f.id}`;
+                             const val = group.extendedFields[fieldKey] || '';
+                             const fieldHtml = createLockedField(f.label, fieldKey, val, f.placeholder || "URL/Text...");
+                             grid.appendChild(fieldHtml);
+                        });
+                        paneContainer.appendChild(grid);
+                     }
+                     
+                     card.appendChild(paneContainer);
+                 });
+                 
+                 container.appendChild(card);
+            } else if (section.isAccountGroup) {
+                 // Create single container card with switch for Accounts
+                 const card = document.createElement('div');
+                 card.className = 'project-card';
+                 
+                 // Create header with switch
+                 const header = document.createElement('div');
+                 header.style.cssText = "display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f0f0f0; padding-bottom:10px; margin-bottom:15px;";
+                 
+                 const titleBox = document.createElement('div');
+                 const title = document.createElement('h4');
+                 title.style.margin = '0 0 2px 0';
+                 title.style.color = '#2c3e50';
+                 title.style.fontSize = '15px';
+                 title.textContent = section.category;
+                 const sub = document.createElement('span');
+                 sub.style.fontSize = '11px';
+                 sub.style.color='#999';
+                 sub.textContent = section.description || "Manage 3rd party accounts";
+                 titleBox.appendChild(title);
+                 titleBox.appendChild(sub);
+                 
+                 const switchContainer = document.createElement('div');
+                 switchContainer.className = 'env-switch-container';
+                 
+                 // Generate switch buttons (Acc 1..5)
+                 const accountIndices = Array.from({length: section.accountCount}, (_, i) => i + 1);
+                 
+                 accountIndices.forEach((num, idx) => {
+                     const btn = document.createElement('button');
+                     btn.className = `env-switch-btn ${idx === 0 ? 'active' : ''}`;
+                     btn.textContent = `Acc ${num}`;
+                     btn.onclick = () => {
+                         // Switch logic
+                         card.querySelectorAll('.env-switch-btn').forEach(b => b.classList.remove('active'));
+                         btn.classList.add('active');
+                         card.querySelectorAll('.acc-content-pane').forEach(p => p.style.display = 'none');
+                         const pane = card.querySelector(`#acc_pane_${num}`);
+                         if(pane) pane.style.display = 'grid';
+                     };
+                     switchContainer.appendChild(btn);
+                 });
+                 
+                 header.appendChild(titleBox);
+                 header.appendChild(switchContainer);
+                 card.appendChild(header);
+                 
+                 // Content panes
+                 accountIndices.forEach((num, idx) => {
+                     const grid = document.createElement('div');
+                     grid.className = 'modules-grid acc-content-pane';
+                     grid.id = `acc_pane_${num}`;
+                     grid.style.display = idx === 0 ? 'grid' : 'none'; // Show first by default
+                     
+                     section.fieldsTemplate.forEach(f => {
+                         const fieldKey = `acc${num}_${f.id}`;
+                         const val = group.extendedFields[fieldKey] || '';
+                         const fieldHtml = createLockedField(f.label, fieldKey, val, f.placeholder);
+                         grid.appendChild(fieldHtml);
+                     });
+                     card.appendChild(grid);
+                 });
+                 
+                 container.appendChild(card);
             } else {
                 // Render Normal Section
                 const card = createSectionCard(section.category, section.description);
@@ -2872,6 +3082,10 @@
        if (document.getElementById('ganttView').style.display === 'flex') {
          renderGantt();
        }
+       projectDetailsModal.style.display = 'none';
+    });
+
+    document.getElementById('closeProjectBtn').addEventListener('click', () => {
        projectDetailsModal.style.display = 'none';
     });
 
