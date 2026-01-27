@@ -420,13 +420,31 @@
       flex-grow: 1;
       padding-right: 30px; /* Space for lock icon */
       background-color: #f0f0f0; /* Default locked bg */
-      cursor: not-allowed;
+      cursor: copy;
     }
-    .locked-field-input:not(:disabled) {
+    .locked-field-input:not(:read-only) {
       background-color: white;
       cursor: text;
       border-color: #7fb3ff;
       box-shadow: 0 0 0 2px rgba(127,179,255,0.2);
+    }
+
+    .copied-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #28a745;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      z-index: 5;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     .field-lock-btn {
       position: absolute;
@@ -2695,11 +2713,11 @@
             { label: "App Service / ECS", id: "appService", subGroup: "App Service & Compute" },
             { label: "AWS Instance Name", id: "awsName", subGroup: "App Service & Compute" },
             { label: "AWS Instance ID", id: "awsId", subGroup: "App Service & Compute" },
+            { label: "Security Group / Firewall", id: "secGroup", subGroup: "App Service & Compute" },
             
             // Server Configuration
             { label: "Server Configuration Path", id: "configPath", subGroup: "Server Configuration" },
             { label: "Nginx Config Location", id: "nginxConfig", subGroup: "Server Configuration" },
-            { label: "Security Group / Firewall", id: "secGroup", subGroup: "Server Configuration" },
             { label: "RAM / CPU Specs", id: "ramSpecs", subGroup: "Server Configuration" },
             { label: "Database Console", id: "dbConsole", subGroup: "Server Configuration" },
 
@@ -2961,7 +2979,8 @@
         wrapper.innerHTML = `
           <label class="project-label">${label}</label>
           <div class="locked-field-container">
-             <input type="text" class="project-value locked-field-input" id="field_${safeKey}" value="${escapeHtml(value)}" placeholder="${placeholder}" disabled>
+             <input type="text" class="project-value locked-field-input" id="field_${safeKey}" value="${escapeHtml(value)}" placeholder="${placeholder}" readonly>
+             <div class="copied-overlay" id="overlay_${safeKey}">COPIED!</div>
              <button class="field-lock-btn" id="btn_${safeKey}" title="Click to Edit">🔒</button>
           </div>
         `;
@@ -2969,7 +2988,33 @@
         // Add event listener to lock button
         const btn = wrapper.querySelector(`#btn_${safeKey}`);
         const input = wrapper.querySelector(`#field_${safeKey}`);
+        const overlay = wrapper.querySelector(`#overlay_${safeKey}`);
         
+        // Copy to clipboard on click when locked
+        input.onclick = () => {
+             // Only copy if locked (readOnly) and has a value
+             if (input.readOnly && input.value.trim() !== '') {
+                 navigator.clipboard.writeText(input.value).then(() => {
+                     // Trigger green blink via inline style for maximum specificity
+                     const originalBg = input.style.backgroundColor;
+                     input.style.transition = 'none';
+                     input.style.backgroundColor = '#d4edda'; // Light green
+                     
+                     // Show Overlay
+                     overlay.style.opacity = '1';
+
+                     // Fade out
+                     setTimeout(() => {
+                        input.style.transition = 'background-color 0.5s ease';
+                        input.style.backgroundColor = originalBg; 
+                        overlay.style.opacity = '0';
+                     }, 800);
+                 }).catch(err => {
+                     console.error('Failed to copy: ', err);
+                 });
+             }
+        };
+
         btn.onclick = () => handleLockClick(key, input, btn);
 
         return wrapper;
@@ -2986,11 +3031,11 @@
 
     // Logic for Lock/Unlock flow
     function handleLockClick(key, input, btn) {
-        const isLocked = input.disabled;
+        const isLocked = input.readOnly;
         
         if (isLocked) {
             // Unlock Action
-            input.disabled = false;
+            input.readOnly = false;
             input.focus();
             btn.innerHTML = '💾'; // Save icon
             btn.title = "Save & Lock";
@@ -3022,7 +3067,7 @@
     }
 
     function lockFieldBack(input, btn) {
-        input.disabled = true;
+        input.readOnly = true;
         btn.innerHTML = '🔒';
         btn.title = "Click to Edit";
         btn.classList.remove('unlocked');
